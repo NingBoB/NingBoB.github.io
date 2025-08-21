@@ -1,0 +1,625 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mean">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Thread和RunnableThread类的javadoc文档1234567891011121314151617181920212223242526272829303132333435363738394041424344When a Java Virtual Machine starts up, there is usually a single non-daemon thread (which">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mean&#39;s Blog">
+<meta property="og:url" content="http://example.com/2025/08/21/Java/%E9%9D%A2%E8%AF%95/JUC/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/javadoc%E6%96%87%E6%A1%A3/Thread%E5%92%8CRunnable/index.html">
+<meta property="og:site_name" content="Mean&#39;s Blog">
+<meta property="og:description" content="Thread和RunnableThread类的javadoc文档1234567891011121314151617181920212223242526272829303132333435363738394041424344When a Java Virtual Machine starts up, there is usually a single non-daemon thread (which">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:modified_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:author" content="Mean">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Mean&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-21 13:48" pubdate>
+          2025年8月21日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          820 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          7 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Thread和Runnable"><a href="#Thread和Runnable" class="headerlink" title="Thread和Runnable"></a>Thread和Runnable</h1><h4 id="Thread类的javadoc文档"><a href="#Thread类的javadoc文档" class="headerlink" title="Thread类的javadoc文档"></a>Thread类的javadoc文档</h4><figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs axapta">When a Java Virtual Machine starts up, there <span class="hljs-keyword">is</span> usually a single non-daemon thread (which typically calls the method named main of some designated <span class="hljs-keyword">class</span>). The Java Virtual Machine continues to execute threads until either of the following occurs:<br>当Java虚拟机启动时，通常只有一个非守护进程线程（它通常调用某些指定类中名为main的方法）。Java虚拟机继续执行线程，直到发生以下任一情况：<br>The exit method of <span class="hljs-keyword">class</span> <span class="hljs-title class_">Runtime</span> has been called and the security manager has permitted the exit operation to take place.<br>类运行时的exit方法已被调用，安全管理器已允许执行exit操作。<br>All threads that are not daemon threads have died, either <span class="hljs-keyword">by</span> returning <span class="hljs-keyword">from</span> the call to the run method or <span class="hljs-keyword">by</span> throwing an exception that propagates beyond the run method.<br>不是守护进程线程的所有线程都已死亡，方法是从对run方法的调用返回，或者引发传播到run方法之外的异常。<br><br>There are two ways to create a <span class="hljs-keyword">new</span> thread of execution. One <span class="hljs-keyword">is</span> to declare a <span class="hljs-keyword">class</span> <span class="hljs-title class_">to</span> be a sub<span class="hljs-keyword">class</span> <span class="hljs-title class_">of</span> Thread. This sub<span class="hljs-keyword">class</span> <span class="hljs-title class_">should</span> override the run method of <span class="hljs-keyword">class</span> <span class="hljs-title class_">Thread</span>. An instance of the sub<span class="hljs-keyword">class</span> <span class="hljs-title class_">can</span> then be allocated and started. For example, a thread that computes primes larger than a stated value could be written <span class="hljs-keyword">as</span> follows:<br>有两种方法可以创建新的执行线程。一种是将类声明为Thread的子类。这个子类应该重写类线程的run方法。然后可以分配并启动子类的实例。例如，计算大于指定值的素数的线程可以如下编写：<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">PrimeThread</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Thread</span> &#123;<br>           <span class="hljs-built_in">long</span> minPrime;<br>           PrimeThread(<span class="hljs-built_in">long</span> minPrime) &#123;<br>               <span class="hljs-keyword">this</span>.minPrime = minPrime;<br>           &#125;<br>  <br>           <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> run() &#123;<br>               <span class="hljs-comment">// compute primes larger than minPrime</span><br>                . . .<br>           &#125;<br>       &#125;<br>下面的代码将创建一个线程并启动它运行：<br>     PrimeRun p = <span class="hljs-keyword">new</span> PrimeRun(<span class="hljs-number">143</span>);<br>       <span class="hljs-keyword">new</span> Thread(p).start();<br>       <br>The other way to create a thread <span class="hljs-keyword">is</span> to declare a <span class="hljs-keyword">class</span> <span class="hljs-title class_">that</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_ inherited__">the</span> Runnable <span class="hljs-keyword">interface</span>. That <span class="hljs-keyword">class</span> <span class="hljs-title class_">then</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_ inherited__">the</span> run method. An instance of the <span class="hljs-keyword">class</span> <span class="hljs-title class_">can</span> then be allocated, passed <span class="hljs-keyword">as</span> an argument when creating Thread, and started. The same example <span class="hljs-keyword">in</span> <span class="hljs-keyword">this</span> other style looks <span class="hljs-keyword">like</span> the following:<br>创建线程的另一种方法是声明实现Runnable接口的类。然后，该类实现run方法。然后可以分配类的实例，在创建Thread类时作为参数传递，然后启动。相同示例如下所示：<br><br>       <span class="hljs-keyword">class</span> <span class="hljs-title class_">PrimeRun</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_ inherited__">Runnable</span> &#123;<br>           <span class="hljs-built_in">long</span> minPrime;<br>           PrimeRun(<span class="hljs-built_in">long</span> minPrime) &#123;<br>               <span class="hljs-keyword">this</span>.minPrime = minPrime;<br>           &#125;<br>           <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> run() &#123;<br>               <span class="hljs-comment">// compute primes larger than minPrime</span><br>                . . .<br>           &#125;<br>       &#125;<br>启动<br>       PrimeRun p = <span class="hljs-keyword">new</span> PrimeRun(<span class="hljs-number">143</span>);<br>       <span class="hljs-keyword">new</span> Thread(p).start();<br><br>Every thread has a name <span class="hljs-keyword">for</span> identification purposes. More than one thread may have the same name. If a name <span class="hljs-keyword">is</span> not specified when a thread <span class="hljs-keyword">is</span> created, a <span class="hljs-keyword">new</span> name <span class="hljs-keyword">is</span> generated <span class="hljs-keyword">for</span> it.<br>每个线程都有一个用于标识的名称。多个线程可能具有相同的名称。如果在创建线程时未指定名称，则会为其生成新名称。<br></code></pre></td></tr></table></figure>
+
+<h5 id="Thread-的start-方法"><a href="#Thread-的start-方法" class="headerlink" title="Thread 的start() 方法"></a>Thread 的start() 方法</h5><figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">Causes this thread <span class="hljs-keyword">to</span> <span class="hljs-keyword">begin</span> execution<span class="hljs-punctuation">;</span> the Java <span class="hljs-keyword">Virtual</span> Machine calls the run <span class="hljs-keyword">method</span> <span class="hljs-title function_">of</span> <span class="hljs-title function_">this</span> <span class="hljs-title function_">thread</span>.<br>使此线程开始执行；<span class="hljs-title function_">Java</span>虚拟机调用此线程的<span class="hljs-title function_">run</span>方法。 <br><br><span class="hljs-title function_">The</span> <span class="hljs-title function_">result</span> <span class="hljs-title function_">is</span> <span class="hljs-title function_">that</span> <span class="hljs-title function_">two</span> <span class="hljs-title function_">threads</span> <span class="hljs-title function_">are</span> <span class="hljs-title function_">running</span> <span class="hljs-title function_">concurrently</span>: the current thread  (which returns <span class="hljs-keyword">from</span> the call <span class="hljs-keyword">to</span> the start <span class="hljs-keyword">method</span>) <span class="hljs-title function_">and</span> <span class="hljs-title function_">the</span> <span class="hljs-title function_">other</span> <span class="hljs-title function_">thread</span>  <span class="hljs-params">(which executes its run <span class="hljs-keyword">method</span>)</span>.<br>结果是两个线程同时运行：当前线程和另一个线程（执行其<span class="hljs-title function_">run</span>方法）。 <br></code></pre></td></tr></table></figure>
+
+<h5 id="Thread-的run-方法的javadoc文档"><a href="#Thread-的run-方法的javadoc文档" class="headerlink" title="Thread 的run()方法的javadoc文档"></a>Thread 的run()方法的javadoc文档</h5><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-number">1.</span>如果此线程是使用单独的Runnable run对象构造的，则调用该Runnable对象的run方法；否则，此方法不执行任何操作并返回。 <br><span class="hljs-number">2.</span>Subclasses of Thread should <span class="hljs-keyword">override</span> <span class="hljs-keyword">this</span> method. 线程的子类应重写此方法。 <br></code></pre></td></tr></table></figure>
+
+<h4 id="Runnable-类得javadoc文档"><a href="#Runnable-类得javadoc文档" class="headerlink" title="Runnable 类得javadoc文档"></a>Runnable 类得javadoc文档</h4><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><br><br>The Runnable interface should be implemented <span class="hljs-keyword">by</span> <span class="hljs-keyword">any</span> <span class="hljs-keyword">class</span> whose instances are intended <span class="hljs-keyword">to</span> be executed <span class="hljs-keyword">by</span> a thread. The <span class="hljs-keyword">class</span> must define a <span class="hljs-keyword">method</span> <span class="hljs-keyword">of</span> <span class="hljs-keyword">no</span> arguments <span class="hljs-keyword">called</span> run.<br>实例要由线程执行的类要实现Runnable接口。类必须定义一个名为run的无参数方法。<br><br>This interface <span class="hljs-keyword">is</span> designed <span class="hljs-keyword">to</span> provide a common protocol <span class="hljs-keyword">for</span> objects that wish <span class="hljs-keyword">to</span> <span class="hljs-keyword">execute</span> code <span class="hljs-keyword">while</span> they are active. <span class="hljs-keyword">For</span> example, Runnable <span class="hljs-keyword">is</span> implemented <span class="hljs-keyword">by</span> <span class="hljs-keyword">class</span> Thread. Being active simply means that a thread has been started <span class="hljs-keyword">and</span> has <span class="hljs-keyword">not</span> yet been stopped.<br>此接口旨在为希望在活动时执行代码的对象提供通用协议。例如，Runnable被Thread类实现。处于活动状态只意味着线程已启动但尚未停止。<br><br><span class="hljs-keyword">In</span> addition, Runnable provides the means <span class="hljs-keyword">for</span> a <span class="hljs-keyword">class</span> <span class="hljs-keyword">to</span> be active <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> subclassing Thread. A <span class="hljs-keyword">class</span> that implements Runnable can run <span class="hljs-keyword">without</span> subclassing Thread <span class="hljs-keyword">by</span> instantiating a Thread instance <span class="hljs-keyword">and</span> <span class="hljs-keyword">passing</span> itself <span class="hljs-keyword">in</span> <span class="hljs-keyword">as</span> the target. <span class="hljs-keyword">In</span> most cases, the Runnable interface should be used <span class="hljs-keyword">if</span> you are <span class="hljs-keyword">only</span> planning <span class="hljs-keyword">to</span> override the run() <span class="hljs-keyword">method</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">no</span> other Thread methods. This <span class="hljs-keyword">is</span> important because classes should <span class="hljs-keyword">not</span> be subclassed unless the programmer intends <span class="hljs-keyword">on</span> modifying <span class="hljs-keyword">or</span> enhancing the fundamental behavior <span class="hljs-keyword">of</span> the <span class="hljs-keyword">class</span>.<br>此外，Runnable提供了一种方法，使类在不继承Thread类的情况下处于活动状态。实现Runnable的类可以通过实例化一个Thread实例并将其自身作为目标传入来运行，而无需继承Thread类。在大多数情况下，如果只计划重写run()方法，而不打算重写其他线程方法，则应使用Runnable接口。这一点很重要，因为除非程序员打算修改或增强类的基本行为，否则不应该对类进行子类化。 <br><br>This <span class="hljs-keyword">method</span> should <span class="hljs-keyword">only</span> be <span class="hljs-keyword">called</span> <span class="hljs-keyword">by</span> a thread that <span class="hljs-keyword">is</span> the <span class="hljs-keyword">owner</span> <span class="hljs-keyword">of</span> this <span class="hljs-keyword">object</span><span class="hljs-string">&#x27;s monitor. See the notify method for a description of the ways in which a thread can become the owner of a monitor.</span><br><span class="hljs-string">此方法只能由作为此对象监视器所有者的线程调用。有关线程成为监视器所有者的方式的描述，请参见notify方法。</span><br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2025/08/21/Java/面试/JUC/java并发编程/javadoc文档/Thread和Runnable/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mean</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%9D%A2%E8%AF%95/JUC/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/%E9%94%81%E5%8D%87%E7%BA%A7%E5%92%8C%E5%81%8F%E5%90%91%E9%94%81/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%9D%A2%E8%AF%95/JUC/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/javadoc%E6%96%87%E6%A1%A3/Lock/" title="">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,634 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mean">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="condition传统上，我们可以通过synchromized关键字+wait+notify&#x2F;notifyAll来实现多个线程之间的协调和通信，整个过程都是由JVM来帮助我们实现的，开发者无需了解底层的实现细节 从JDK 5开始，并发包提供了Lock，condition(await与signal&#x2F;signalAll)来实现多个线程之间的协调通信，整个过程都是由开发者来控制的，而">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mean&#39;s Blog">
+<meta property="og:url" content="http://example.com/2025/08/21/Java/%E9%9D%A2%E8%AF%95/JUC/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/javadoc%E6%96%87%E6%A1%A3/condition/index.html">
+<meta property="og:site_name" content="Mean&#39;s Blog">
+<meta property="og:description" content="condition传统上，我们可以通过synchromized关键字+wait+notify&#x2F;notifyAll来实现多个线程之间的协调和通信，整个过程都是由JVM来帮助我们实现的，开发者无需了解底层的实现细节 从JDK 5开始，并发包提供了Lock，condition(await与signal&#x2F;signalAll)来实现多个线程之间的协调通信，整个过程都是由开发者来控制的，而">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:modified_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:author" content="Mean">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Mean&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-21 13:48" pubdate>
+          2025年8月21日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          26 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="condition"><a href="#condition" class="headerlink" title="condition"></a>condition</h1><p>传统上，我们可以通过synchromized关键字+wait+notify&#x2F;notifyAll来实现多个线程之间的协调和通信，整个过程都是由JVM来帮助我们实现的，开发者无需了解底层的实现细节</p>
+<p>从JDK 5开始，并发包提供了Lock，condition(await与signal&#x2F;signalAll)来实现多个线程之间的协调通信，整个过程都是由开发者来控制的，而且相比于传统的方式，更加灵活，功能也更加强大。</p>
+<p>先了解一些interrupt()方法的相关知识：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/noteless/p/10372826.html#0">博客地址</a></p>
+<h3 id="Condition类的javadoc文档"><a href="#Condition类的javadoc文档" class="headerlink" title="Condition类的javadoc文档"></a>Condition类的javadoc文档</h3><figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs smali">Condition<br>Condition factors out the Object mon itor methods (wait, notify<span class="hljs-built_in"> and </span>notifyAll) into distinct objects to give the effect of having multiple wait-sets per object, by combining them with the use of arbitrary Lock implementations. Where a Lock replaces the use of synchronized methods<span class="hljs-built_in"> and </span>statements, a Condition replaces the use of the Object<span class="hljs-built_in"> monitor </span>methods.<br>Condition将对象监视器方法（wait、notify和notifyAll）分解为不同的对象，通过将它们与使用任意Lock实现相结合，使每个对象具有多个wait-sets的效果。当Lock替换同步方法和语句的使用时，Condition将替换对象监视器方法的使用。 Lock-&gt;synchronized,Condition-&gt;Object<span class="hljs-built_in"> monitor</span><br><span class="hljs-built_in"></span><br>Conditions (also known as condition queues<span class="hljs-built_in"> or </span>condition variables) provide a means for one thread to suspend execution (to <span class="hljs-string">&quot;wait&quot;</span>) until notified by another thread that some state condition may now be true. Because access to this shared state information occurs in different threads, it must be<span class="hljs-keyword"> protected</span>, so a lock of some form is associated with the condition. The key property that waiting for a condition provides is that it atomically releases the associated lock<span class="hljs-built_in"> and </span>suspends the current thread, just like Object.wait.<br>Conditions（也称为Conditions队列或Conditions变量）为一个线程提供了一种暂停执行（等待）的方法，直到另一个线程notified认为某些状态条件现在可能为真(跟wait/notify的逻辑是一样的)。由于对共享状态信息的访问发生在不同的线程中，因此必须对其进行保护，因此某种形式的lock与该condition相关联。waiting for a condition提供的关键属性是，它自动释放关联的锁并挂起当前线程，就像Object.wait一样。<br>A Condition<span class="hljs-built_in"> instance </span>is intrinsically bound to a lock. To obtain a Condition<span class="hljs-built_in"> instance </span>for a particular Lock<span class="hljs-built_in"> instance </span>use its newCondition() method.<br>Condition实例天然地上绑定到lock。要获取特定Lock实例的Condition实例，请使用其newCondition（）方法。<br><br>As an example, suppose we have a bounded buffer which supports put<span class="hljs-built_in"> and </span>take methods. If a take is attempted on an empty buffer, then the thread will block until an item becomes available;<span class="hljs-built_in"> if </span>a put is attempted on a full buffer, then the thread will block until a space becomes available. We would like to keep waiting put threads<span class="hljs-built_in"> and </span>take threads in separate wait-sets so that we can use the optimization of only notifying a single thread at a time when items<span class="hljs-built_in"> or </span>spaces become available in the buffer. This can be achieved using two Condition instances.<br>例如，假设我们有一个有界缓冲区，它支持put和take方法。如果在空缓冲区上尝试执行take，则线程将阻塞，直到某个项变为可用；如果在完全缓冲区上尝试执行put，则线程将阻塞，直到某个空间变为可用。我们希望通过将线程放入不同的wait-sets中来保持put线程和take线程上的waiting，以便在缓冲区中的项目或空间可用时，我们可以使用仅notifying单个线程的优化。这可以通过两个条件Condition来实现。<br><br>class BoundedBuffer &#123;<br>    <span class="hljs-keyword"> final</span> Lock lock =<span class="hljs-built_in"> new </span>ReentrantLock();<br>    <span class="hljs-keyword"> final</span> Condition notFull  = lock.newCondition(); <br>    <span class="hljs-keyword"> final</span> Condition notEmpty = lock.newCondition(); <br>  <br>    <span class="hljs-keyword"> final</span> Object[] items =<span class="hljs-built_in"> new </span>Object[100];<br>    <span class="hljs-built_in"> int </span>putptr, takeptr, count;<br>  <br>    <span class="hljs-keyword"> public</span> void put(Object x) throws InterruptedException &#123;<br>       lock.lock();<br>       try &#123;<br>         while (count == items.length)<br>           notFull.await();<br>         items[putptr] = x;<br>        <span class="hljs-built_in"> if </span>(++putptr == items.length) putptr = 0;<br>         ++count;<br>         notEmpty.signal();<br>       &#125;<span class="hljs-keyword"> final</span>ly &#123;<br>         lock.unlock();<br>       &#125;<br>     &#125;<br>  <br>    <span class="hljs-keyword"> public</span> Object take() throws InterruptedException &#123;<br>       lock.lock();<br>       try &#123;<br>         while (count == 0)<br>           notEmpty.await();<br>         Object x = items[takeptr];<br>        <span class="hljs-built_in"> if </span>(++takeptr == items.length) takeptr = 0;<br>         --count;<br>         notFull.signal();<br>        <span class="hljs-built_in"> return </span>x;<br>       &#125;<span class="hljs-keyword"> final</span>ly &#123;<br>         lock.unlock();<br>       &#125;<br>     &#125;<br>   &#125;<br>   <br>   A Condition implementation can provide behavior<span class="hljs-built_in"> and </span>semantics that is different from that of the Object<span class="hljs-built_in"> monitor </span>methods, such as guaranteed ordering for notifications,<span class="hljs-built_in"> or </span>not requiring a lock to be held when performing notifications. If an implementation provides such specialized semantics then the implementation must document those semantics.<br>Condition实现可以提供不同于对象监视器方法的行为和语义，例如保证通知的顺序，或者在执行通知时不需要持有锁。如果一个implementation提供了这样的专门语义，那么该实现implementation必须记录这些语义。<br><br>Note that Condition instances are just normal objects<span class="hljs-built_in"> and </span>can themselves be used as the target in a synchronized statement,<span class="hljs-built_in"> and </span>can have their own<span class="hljs-built_in"> monitor </span>wait<span class="hljs-built_in"> and </span>notification methods invoked. Acquiring the<span class="hljs-built_in"> monitor </span>lock of a Condition instance,<span class="hljs-built_in"> or </span>using its<span class="hljs-built_in"> monitor </span>methods, has no specified relationship with acquiring the Lock associated with that Condition<span class="hljs-built_in"> or </span>the use of its waiting<span class="hljs-built_in"> and </span>signalling methods. It is recommended that to avoid confusion you never use Condition instances in this way, except perhaps within their own implementation.<br>请注意，Condition实例只是普通对象，它们本身可以用作synchronized语句中的目标，并且可以调用它们自己的监视器等待和通知方法。获取Condition实例的监视锁或使用其监视方法与获取与该Condition相关联的Lock或使用其waiting和signalling方法没有指定的关系。为了避免混淆，建议您不要以这种方式使用条件实例，除非可能是在它们自己的实现中。<br><br>Except where noted, passing a null value for any parameter will result in a NullPointerException being thrown.<br>除非另有说明，否则为任何参数传递空值将导致引发NullPointerException。<br><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><br>Implementation Considerations<br><span class="hljs-keyword">When</span> waiting upon a Condition, a &quot;spurious wakeup&quot; <span class="hljs-keyword">is</span> permitted <span class="hljs-keyword">to</span> occur, <span class="hljs-keyword">in</span> general, <span class="hljs-keyword">as</span> a concession <span class="hljs-keyword">to</span> the underlying platform semantics. This has little practical impact <span class="hljs-keyword">on</span> most application programs <span class="hljs-keyword">as</span> a Condition should <span class="hljs-keyword">always</span> be waited upon <span class="hljs-keyword">in</span> a <span class="hljs-keyword">loop</span>, testing the state predicate that <span class="hljs-keyword">is</span> being waited <span class="hljs-keyword">for</span>. An implementation <span class="hljs-keyword">is</span> free <span class="hljs-keyword">to</span> remove the possibility <span class="hljs-keyword">of</span> spurious wakeups but it <span class="hljs-keyword">is</span> recommended that applications programmers <span class="hljs-keyword">always</span> assume that they can occur <span class="hljs-keyword">and</span> so <span class="hljs-keyword">always</span> wait <span class="hljs-keyword">in</span> a <span class="hljs-keyword">loop</span>.<br>在等待条件时，通常允许出现“虚假唤醒”，作为对底层平台语义的让步。这对大多数应用程序几乎没有实际影响，因为应该始终在循环中等待Condition和测试正在等待的状态条件是否被满足。实现可以自由地消除虚假唤醒的可能性，但建议应用程序程序员始终假设它们可能发生，因此始终在循环中等待。<br><br>The three forms <span class="hljs-keyword">of</span> condition waiting (interruptible, non-interruptible, <span class="hljs-keyword">and</span> timed) may differ <span class="hljs-keyword">in</span> their ease <span class="hljs-keyword">of</span> implementation <span class="hljs-keyword">on</span> <span class="hljs-keyword">some</span> platforms <span class="hljs-keyword">and</span> <span class="hljs-keyword">in</span> their performance <span class="hljs-keyword">characteristics</span>. <span class="hljs-keyword">In</span> particular, it may be difficult <span class="hljs-keyword">to</span> provide these features <span class="hljs-keyword">and</span> maintain specific semantics such <span class="hljs-keyword">as</span> ordering guarantees. Further, the ability <span class="hljs-keyword">to</span> interrupt the actual suspension <span class="hljs-keyword">of</span> the thread may <span class="hljs-keyword">not</span> <span class="hljs-keyword">always</span> be feasible <span class="hljs-keyword">to</span> implement <span class="hljs-keyword">on</span> <span class="hljs-keyword">all</span> platforms.<br>condition等待的三种形式（可中断、不可中断和定时）在某些平台上的易实现性和性能特征上可能有所不同。特别是，可能很难提供这些特性并维护例如排序保证这样的特定语义。此外，在所有平台上实现中断线程实际挂起的能力并不总是可行的。<br>Consequently, an implementation <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> required <span class="hljs-keyword">to</span> define exactly the same guarantees <span class="hljs-keyword">or</span> semantics <span class="hljs-keyword">for</span> <span class="hljs-keyword">all</span> three forms <span class="hljs-keyword">of</span> waiting, nor <span class="hljs-keyword">is</span> it required <span class="hljs-keyword">to</span> support interruption <span class="hljs-keyword">of</span> the actual suspension <span class="hljs-keyword">of</span> the thread.<br>因此，实现不需要为所有三种等待形式定义完全相同的保证或语义，也不需要支持中断线程的实际挂起。<br><br>An implementation <span class="hljs-keyword">is</span> required <span class="hljs-keyword">to</span> clearly document the semantics <span class="hljs-keyword">and</span> guarantees provided <span class="hljs-keyword">by</span> <span class="hljs-keyword">each</span> <span class="hljs-keyword">of</span> the waiting methods, <span class="hljs-keyword">and</span> <span class="hljs-keyword">when</span> an implementation does support interruption <span class="hljs-keyword">of</span> thread suspension <span class="hljs-keyword">then</span> it must obey the interruption semantics <span class="hljs-keyword">as</span> defined <span class="hljs-keyword">in</span> this interface.<br>implementation需要清楚地记录每个等待方法提供的语义和保证，当implementation确实支持中断线程挂起时，它必须遵守此接口中定义的中断语义。<br><span class="hljs-keyword">As</span> interruption generally implies cancellation, <span class="hljs-keyword">and</span> checks <span class="hljs-keyword">for</span> interruption are often infrequent, an implementation can favor responding <span class="hljs-keyword">to</span> an interrupt <span class="hljs-keyword">over</span> normal <span class="hljs-keyword">method</span> <span class="hljs-keyword">return</span>. This <span class="hljs-keyword">is</span> <span class="hljs-keyword">true</span> even <span class="hljs-keyword">if</span> it can be shown that the interrupt occurred <span class="hljs-keyword">after</span> another action that may have unblocked the thread. An implementation should document this behavior.<br>由于中断通常意味着取消，并且对中断的检查通常是不经常的，所以实现可能倾向于响应中断，而不是普通的方法返回。即使可以显示中断发生在另一个可能已解除阻止线程的操作之后也是如此。实现implementation应该记录此行为。<br></code></pre></td></tr></table></figure>
+
+<h3 id="await方法的javadoc文档"><a href="#await方法的javadoc文档" class="headerlink" title="await方法的javadoc文档"></a>await方法的javadoc文档</h3><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs applescript">Causes <span class="hljs-keyword">the</span> current thread <span class="hljs-keyword">to</span> wait <span class="hljs-keyword">until</span> <span class="hljs-keyword">it</span> <span class="hljs-keyword">is</span> signalled <span class="hljs-keyword">or</span> interrupted.<br>使当前线程等待，直到发出signalled或中断为止。<br>The lock associated <span class="hljs-keyword">with</span> this Condition <span class="hljs-keyword">is</span> atomically released <span class="hljs-keyword">and</span> <span class="hljs-keyword">the</span> current thread becomes disabled <span class="hljs-keyword">for</span> thread scheduling purposes <span class="hljs-keyword">and</span> lies dormant <span class="hljs-keyword">until</span> one <span class="hljs-keyword">of</span> four things happens:<br>Some other thread invokes <span class="hljs-keyword">the</span> signal method <span class="hljs-keyword">for</span> this Condition <span class="hljs-keyword">and</span> <span class="hljs-keyword">the</span> current thread happens <span class="hljs-keyword">to</span> be chosen <span class="hljs-keyword">as</span> <span class="hljs-keyword">the</span> thread <span class="hljs-keyword">to</span> be awakened; <span class="hljs-keyword">or</span><br>Some other thread invokes <span class="hljs-keyword">the</span> signalAll method <span class="hljs-keyword">for</span> this Condition; <span class="hljs-keyword">or</span><br>Some other thread interrupts <span class="hljs-keyword">the</span> current thread, <span class="hljs-keyword">and</span> interruption <span class="hljs-keyword">of</span> thread suspension <span class="hljs-keyword">is</span> supported; <span class="hljs-keyword">or</span><br>A <span class="hljs-string">&quot;spurious wakeup&quot;</span> occurs.<br>与此Condition关联的锁是原子释放的，当前线程出于线程调度目的将被禁用，并处于休眠状态，直到发生以下四种情况之一：<br><span class="hljs-number">1.</span>其他一些线程为此Condition调用signal方法，而当前线程恰好被选为要唤醒的线程；或者<br><span class="hljs-number">2.</span>其他一些线程为此Condition调用signalAll方法；或<br><span class="hljs-number">3.</span>其他一些线程中断当前线程，并且支持中断线程挂起；或者<br><span class="hljs-number">4.</span>出现“虚假唤醒”。<br><br>In all cases, <span class="hljs-keyword">before</span> this method can <span class="hljs-literal">return</span> <span class="hljs-keyword">the</span> current thread must re-acquire <span class="hljs-keyword">the</span> lock associated <span class="hljs-keyword">with</span> this condition. When <span class="hljs-keyword">the</span> thread returns <span class="hljs-keyword">it</span> <span class="hljs-keyword">is</span> guaranteed <span class="hljs-keyword">to</span> hold this lock.<br>在所有情况下，在该方法返回之前，当前线程必须重新获取与此condition关联的锁。当线程返回时，它保证持有这个锁。<br>If <span class="hljs-keyword">the</span> current thread:<br>has <span class="hljs-keyword">its</span> interrupted status <span class="hljs-keyword">set</span> <span class="hljs-keyword">on</span> entry <span class="hljs-keyword">to</span> this method; <span class="hljs-keyword">or</span><br><span class="hljs-keyword">is</span> interrupted <span class="hljs-keyword">while</span> waiting <span class="hljs-keyword">and</span> interruption <span class="hljs-keyword">of</span> thread suspension <span class="hljs-keyword">is</span> supported,<br><span class="hljs-keyword">then</span> InterruptedException <span class="hljs-keyword">is</span> thrown <span class="hljs-keyword">and</span> <span class="hljs-keyword">the</span> current thread&#x27;s interrupted status <span class="hljs-keyword">is</span> cleared. It <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> specified, <span class="hljs-keyword">in</span> <span class="hljs-keyword">the</span> <span class="hljs-keyword">first</span> case, whether <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">the</span> test <span class="hljs-keyword">for</span> interruption occurs <span class="hljs-keyword">before</span> <span class="hljs-keyword">the</span> lock <span class="hljs-keyword">is</span> released.<br>如果当前线程：<br><span class="hljs-number">1.</span>在进入此方法时设置了中断状态；或<br><span class="hljs-number">2.</span>等待时被中断，支持中断线程挂起，<br>那么就会抛出InterruptedException并清除当前线程的中断状态。在第一种情况下，未规定是否在释放锁之前要进行中断测试。<br><br>Implementation Considerations<br>实施注意事项<br>The current thread <span class="hljs-keyword">is</span> assumed <span class="hljs-keyword">to</span> hold <span class="hljs-keyword">the</span> lock associated <span class="hljs-keyword">with</span> this Condition when this method <span class="hljs-keyword">is</span> called. It <span class="hljs-keyword">is</span> up <span class="hljs-keyword">to</span> <span class="hljs-keyword">the</span> implementation <span class="hljs-keyword">to</span> determine <span class="hljs-keyword">if</span> this <span class="hljs-keyword">is</span> <span class="hljs-keyword">the</span> case <span class="hljs-keyword">and</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span>, how <span class="hljs-keyword">to</span> respond. Typically, an exception will be thrown (such <span class="hljs-keyword">as</span> IllegalMonitorStateException) <span class="hljs-keyword">and</span> <span class="hljs-keyword">the</span> implementation must document <span class="hljs-keyword">that</span> fact.<br>调用此方法时，假定当前线程持有与此Condition关联的锁。由实现来决定是否是这样，如果不是，如何应对。通常，将抛出异常（例如IllegalMonitorStateException），实现必须记录该事实。<br><br>An implementation can favor responding <span class="hljs-keyword">to</span> an interrupt <span class="hljs-keyword">over</span> normal method <span class="hljs-literal">return</span> <span class="hljs-keyword">in</span> response <span class="hljs-keyword">to</span> a signal. In <span class="hljs-keyword">that</span> case <span class="hljs-keyword">the</span> implementation must ensure <span class="hljs-keyword">that</span> <span class="hljs-keyword">the</span> signal <span class="hljs-keyword">is</span> redirected <span class="hljs-keyword">to</span> another waiting thread, <span class="hljs-keyword">if</span> there <span class="hljs-keyword">is</span> one.<br>实现可以支持响应中断，而不是响应信号的正常方法返回。在这种情况下，实现必须确保信号被重定向到另一个等待线程（如果有）。<br></code></pre></td></tr></table></figure>
+
+<h3 id="awaitUninterruptibly方法的javadoc文档"><a href="#awaitUninterruptibly方法的javadoc文档" class="headerlink" title="awaitUninterruptibly方法的javadoc文档"></a>awaitUninterruptibly方法的javadoc文档</h3><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs applescript">Causes <span class="hljs-keyword">the</span> current thread <span class="hljs-keyword">to</span> wait <span class="hljs-keyword">until</span> <span class="hljs-keyword">it</span> <span class="hljs-keyword">is</span> signalled.<br>使当前线程等待直到发出信号。<br><br>The lock associated <span class="hljs-keyword">with</span> this condition <span class="hljs-keyword">is</span> atomically released <span class="hljs-keyword">and</span> <span class="hljs-keyword">the</span> current thread becomes disabled <span class="hljs-keyword">for</span> thread scheduling purposes <span class="hljs-keyword">and</span> lies dormant <span class="hljs-keyword">until</span> one <span class="hljs-keyword">of</span> three things happens:<br>Some other thread invokes <span class="hljs-keyword">the</span> signal method <span class="hljs-keyword">for</span> this Condition <span class="hljs-keyword">and</span> <span class="hljs-keyword">the</span> current thread happens <span class="hljs-keyword">to</span> be chosen <span class="hljs-keyword">as</span> <span class="hljs-keyword">the</span> thread <span class="hljs-keyword">to</span> be awakened; <span class="hljs-keyword">or</span><br>Some other thread invokes <span class="hljs-keyword">the</span> signalAll method <span class="hljs-keyword">for</span> this Condition; <span class="hljs-keyword">or</span><br>A <span class="hljs-string">&quot;spurious wakeup&quot;</span> occurs.<br>与此条件关联的锁是原子释放的，当前线程出于线程调度目的将被禁用，并处于休眠状态，直到发生以下三种情况之一：<br><span class="hljs-number">1.</span>其他一些线程为此condition调用signal方法，而当前线程恰好被选为要唤醒的线程；或者<br><span class="hljs-number">2.</span>其他一些线程为此condition调用signalAll方法；或<br><span class="hljs-number">3.</span>出现“虚假唤醒”。<br><br>In all cases, <span class="hljs-keyword">before</span> this method can <span class="hljs-literal">return</span> <span class="hljs-keyword">the</span> current thread must re-acquire <span class="hljs-keyword">the</span> lock associated <span class="hljs-keyword">with</span> this condition. When <span class="hljs-keyword">the</span> thread returns <span class="hljs-keyword">it</span> <span class="hljs-keyword">is</span> guaranteed <span class="hljs-keyword">to</span> hold this lock.<br>在所有情况下，在该方法返回之前，当前线程必须重新获取与此条件关联的锁。当线程返回时，它保证保持这个锁。<br>If <span class="hljs-keyword">the</span> current thread&#x27;s interrupted status <span class="hljs-keyword">is</span> <span class="hljs-keyword">set</span> when <span class="hljs-keyword">it</span> enters this method, <span class="hljs-keyword">or</span> <span class="hljs-keyword">it</span> <span class="hljs-keyword">is</span> interrupted <span class="hljs-keyword">while</span> waiting, <span class="hljs-keyword">it</span> will <span class="hljs-keyword">continue</span> <span class="hljs-keyword">to</span> wait <span class="hljs-keyword">until</span> signalled. When <span class="hljs-keyword">it</span> finally returns <span class="hljs-keyword">from</span> this method <span class="hljs-keyword">its</span> interrupted status will still be <span class="hljs-keyword">set</span>.<br>如果当前线程在进入此方法时设置了中断状态，或者在等待时中断，则它将继续等待，直到收到signalled。当它最终从该方法返回时，它的中断状态仍将被设置。<br>Implementation Considerations<br>实施注意事项<br>The current thread <span class="hljs-keyword">is</span> assumed <span class="hljs-keyword">to</span> hold <span class="hljs-keyword">the</span> lock associated <span class="hljs-keyword">with</span> this Condition when this method <span class="hljs-keyword">is</span> called. It <span class="hljs-keyword">is</span> up <span class="hljs-keyword">to</span> <span class="hljs-keyword">the</span> implementation <span class="hljs-keyword">to</span> determine <span class="hljs-keyword">if</span> this <span class="hljs-keyword">is</span> <span class="hljs-keyword">the</span> case <span class="hljs-keyword">and</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span>, how <span class="hljs-keyword">to</span> respond. Typically, an exception will be thrown (such <span class="hljs-keyword">as</span> IllegalMonitorStateException) <span class="hljs-keyword">and</span> <span class="hljs-keyword">the</span> implementation must document <span class="hljs-keyword">that</span> fact.<br>调用此方法时，假定当前线程持有与此Condition关联的锁。由实现来决定是否是这样，如果不是，如何应对。通常，将抛出异常（例如IllegalMonitorStateException），实现必须记录该事实。<br></code></pre></td></tr></table></figure>
+
+<h3 id="awaitNanos-long-nanosTimeout-方法的javadoc文档"><a href="#awaitNanos-long-nanosTimeout-方法的javadoc文档" class="headerlink" title="awaitNanos(long nanosTimeout)方法的javadoc文档"></a>awaitNanos(long nanosTimeout)方法的javadoc文档</h3><figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs fsharp"><br><br>Causes the current thread <span class="hljs-keyword">to</span> wait until it is signalled <span class="hljs-keyword">or</span> interrupted, <span class="hljs-keyword">or</span> the specified waiting time elapses.<br>使当前线程等待，直到发出信号或被中断，或者指定的等待时间结束。<br><br>The <span class="hljs-built_in">lock</span> associated <span class="hljs-keyword">with</span> this condition is atomically released <span class="hljs-keyword">and</span> the current thread becomes disabled <span class="hljs-keyword">for</span> thread scheduling purposes <span class="hljs-keyword">and</span> lies dormant until one <span class="hljs-keyword">of</span> five things happens<span class="hljs-operator">:</span><br><span class="hljs-literal">Some</span> other thread invokes the signal method <span class="hljs-keyword">for</span> this Condition <span class="hljs-keyword">and</span> the current thread happens <span class="hljs-keyword">to</span> be chosen <span class="hljs-keyword">as</span> the thread <span class="hljs-keyword">to</span> be awakened; <span class="hljs-keyword">or</span><br><span class="hljs-literal">Some</span> other thread invokes the signalAll method <span class="hljs-keyword">for</span> this Condition; <span class="hljs-keyword">or</span><br><span class="hljs-literal">Some</span> other thread interrupts the current thread, <span class="hljs-keyword">and</span> interruption <span class="hljs-keyword">of</span> thread suspension is supported; <span class="hljs-keyword">or</span><br>The specified waiting time elapses; <span class="hljs-keyword">or</span><br>A <span class="hljs-string">&quot;spurious wakeup&quot;</span> occurs.<br>与此条件关联的锁是原子释放的，当前线程出于线程调度目的将被禁用，并处于休眠状态，直到发生以下五种情况之一：<br><span class="hljs-number">1.</span>其他一些线程为此condition调用signal方法，而当前线程恰好被选为要唤醒的线程；或者<br><span class="hljs-number">2.</span>其他一些线程为此condition调用signalAll方法；或<br><span class="hljs-number">3.</span>其他一些线程中断当前线程，并且支持中断线程挂起；或者<br><span class="hljs-number">4.</span>规定的等待时间已过；或<br><span class="hljs-number">5.</span>出现“虚假唤醒”。<br><br>In all cases, before this method can <span class="hljs-keyword">return</span> the current thread must re<span class="hljs-operator">-</span>acquire the <span class="hljs-built_in">lock</span> associated <span class="hljs-keyword">with</span> this condition. When the thread returns it is guaranteed <span class="hljs-keyword">to</span> hold this <span class="hljs-built_in">lock</span>.<br>在所有情况下，在该方法返回之前，当前线程必须重新获取与此condition关联的锁。当线程返回时，它保证保持这个锁。<br><br>If the current thread<span class="hljs-operator">:</span><br>has its interrupted status <span class="hljs-built_in">set</span> on entry <span class="hljs-keyword">to</span> this method; <span class="hljs-keyword">or</span><br>is interrupted <span class="hljs-keyword">while</span> waiting <span class="hljs-keyword">and</span> interruption <span class="hljs-keyword">of</span> thread suspension is supported,<br>如果当前线程：<br>在进入此方法时设置了中断状态；或<br>等待时中断，支持中断线程挂起，<br><span class="hljs-keyword">then</span> InterruptedException is thrown <span class="hljs-keyword">and</span> the current thread&#x27;s interrupted status is cleared. It is <span class="hljs-built_in">not</span> specified, <span class="hljs-keyword">in</span> the first case, whether <span class="hljs-keyword">or</span> <span class="hljs-built_in">not</span> the test <span class="hljs-keyword">for</span> interruption occurs before the <span class="hljs-built_in">lock</span> is released.<br>那么抛出InterruptedException并清除当前线程的中断状态。在第一种情况下，未规定是否在释放锁之前要进行中断测试。<br><br>The method returns an estimate <span class="hljs-keyword">of</span> the number <span class="hljs-keyword">of</span> nanoseconds remaining <span class="hljs-keyword">to</span> wait given the supplied nanosTimeout value upon <span class="hljs-keyword">return</span>, <span class="hljs-keyword">or</span> a value less than <span class="hljs-keyword">or</span> equal <span class="hljs-keyword">to</span> zero <span class="hljs-keyword">if</span> it timed out. This value can be used <span class="hljs-keyword">to</span> determine whether <span class="hljs-keyword">and</span> how long <span class="hljs-keyword">to</span> re<span class="hljs-operator">-</span>wait <span class="hljs-keyword">in</span> cases where the wait returns but an awaited condition still does <span class="hljs-built_in">not</span> hold. Typical uses <span class="hljs-keyword">of</span> this method take the following form<span class="hljs-operator">:</span><br>该方法返回给定返回时间nanosTimeout值的剩余等待纳秒数的估计值，如果超时则返回小于或等于零的值。此值可用于确定在等待返回但等待的条件仍然不成立的情况下是否重新等待以及重新等待多长时间。这种方法的典型用途如下：<br>boolean aMethod(long timeout, TimeUnit unit) &#123;<br>   long nanos <span class="hljs-operator">=</span> unit.toNanos(timeout);<br>   <span class="hljs-built_in">lock</span>.<span class="hljs-built_in">lock</span>();<br>   <span class="hljs-keyword">try</span> &#123;<br>     <span class="hljs-keyword">while</span> (<span class="hljs-operator">!</span>conditionBeingWaitedFor()) &#123;<br>       <span class="hljs-keyword">if</span> (nanos <span class="hljs-operator">&lt;=</span> <span class="hljs-number">0</span>L)<br>         <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>       nanos <span class="hljs-operator">=</span> theCondition.awaitNanos(nanos);<br>     &#125;<br>     <span class="hljs-comment">// ...</span><br>   &#125; <span class="hljs-keyword">finally</span> &#123;<br>     <span class="hljs-built_in">lock</span>.unlock();<br>   &#125;<br> &#125;<br>Design note<span class="hljs-operator">:</span> This method requires a nanosecond argument so <span class="hljs-keyword">as</span> <span class="hljs-keyword">to</span> avoid truncation errors <span class="hljs-keyword">in</span> reporting remaining times. Such precision loss would make it difficult <span class="hljs-keyword">for</span> programmers <span class="hljs-keyword">to</span> ensure that total waiting times are <span class="hljs-built_in">not</span> systematically shorter than specified <span class="hljs-keyword">when</span> re<span class="hljs-operator">-</span>waits occur.<br>设计说明：此方法需要纳秒参数，以避免在报告剩余时间时出现截断错误。这样的精度损失将使程序员很难确保在发生重新等待时，总等待时间不会系统地短于指定的时间。<br><br>Implementation Considerations<br>实施注意事项<br>The current thread is assumed <span class="hljs-keyword">to</span> hold the <span class="hljs-built_in">lock</span> associated <span class="hljs-keyword">with</span> this Condition <span class="hljs-keyword">when</span> this method is called. It is up <span class="hljs-keyword">to</span> the implementation <span class="hljs-keyword">to</span> determine <span class="hljs-keyword">if</span> this is the case <span class="hljs-keyword">and</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">not</span>, how <span class="hljs-keyword">to</span> respond. Typically, an <span class="hljs-keyword">exception</span> will be thrown (such <span class="hljs-keyword">as</span> IllegalMonitorStateException) <span class="hljs-keyword">and</span> the implementation must document that fact.<br>调用此方法时，假定当前线程持有与此条件关联的锁。由实现来决定是否是这样，如果不是，如何应对。通常，将抛出异常（例如IllegalMonitorStateException），实现必须记录该事实。<br><br>An implementation can favor responding <span class="hljs-keyword">to</span> an interrupt over normal method <span class="hljs-keyword">return</span> <span class="hljs-keyword">in</span> response <span class="hljs-keyword">to</span> a signal, <span class="hljs-keyword">or</span> over indicating the elapse <span class="hljs-keyword">of</span> the specified waiting time. In either case the implementation must ensure that the signal is redirected <span class="hljs-keyword">to</span> another waiting thread, <span class="hljs-keyword">if</span> there is one.<br>实现可以有利于响应中断，而不是响应信号的正常方法返回，或者有利于指示指定等待时间的流逝。无论哪种情况，实现都必须确保信号重定向到另一个等待线程（如果有）。<br></code></pre></td></tr></table></figure>
+
+<h3 id="signal方法的javadoc文档"><a href="#signal方法的javadoc文档" class="headerlink" title="signal方法的javadoc文档"></a>signal方法的javadoc文档</h3><figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">Wakes up one waiting thread.<br>唤醒一条等待的线。<br><br><span class="hljs-keyword">If</span> any threads are waiting <span class="hljs-keyword">on</span> this condition <span class="hljs-keyword">then</span> one <span class="hljs-keyword">is</span> selected <span class="hljs-keyword">for</span> waking up. That thread must <span class="hljs-keyword">then</span> re-acquire the lock before returning <span class="hljs-keyword">from</span> <span class="hljs-keyword">await</span>.<br>如果任何线程正在等待此condition，则选择一个线程唤醒。然后，该线程必须在从<span class="hljs-keyword">await</span>返回之前重新获取锁。<br><br><span class="hljs-keyword">Implementation</span> Considerations<br>实施注意事项<br>An <span class="hljs-keyword">implementation</span> may (<span class="hljs-keyword">and</span> typically does) <span class="hljs-keyword">require</span> that the current thread hold the lock associated <span class="hljs-keyword">with</span> this Condition when this <span class="hljs-keyword">method</span> <span class="hljs-title function_">is</span> <span class="hljs-title function_">called</span>. <span class="hljs-title function_">Implementations</span> <span class="hljs-title function_">must</span> <span class="hljs-title function_">document</span> <span class="hljs-title function_">this</span> <span class="hljs-title function_">precondition</span> <span class="hljs-title function_">and</span> <span class="hljs-title function_">any</span> <span class="hljs-title function_">actions</span> <span class="hljs-title function_">taken</span> <span class="hljs-title function_">if</span> <span class="hljs-title function_">the</span> <span class="hljs-title function_">lock</span> <span class="hljs-title function_">is</span> <span class="hljs-title function_">not</span> <span class="hljs-title function_">held</span>. <span class="hljs-title function_">Typically</span>, <span class="hljs-title function_">an</span> <span class="hljs-title function_">exception</span> <span class="hljs-title function_">such</span> <span class="hljs-title function_">as</span> <span class="hljs-title function_">IllegalMonitorStateException</span> <span class="hljs-title function_">will</span> <span class="hljs-title function_">be</span> <span class="hljs-title function_">thrown</span>.<br>当调用此方法时，实现可能（并且通常需要）要求当前线程持有与此<span class="hljs-title function_">condition</span>相关联的锁。实现必须记录此前提条件以及在未持有锁的情况下所采取的任何操作。通常，将引发一个异常，如<span class="hljs-title function_">IllegalMonitorStateException</span>。<br></code></pre></td></tr></table></figure>
+
+<h3 id="signalAll方法的javadoc文档"><a href="#signalAll方法的javadoc文档" class="headerlink" title="signalAll方法的javadoc文档"></a>signalAll方法的javadoc文档</h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><br><br>Wakes up <span class="hljs-keyword">all</span> waiting threads.                                                                  <br>唤醒所有等待的线程。<br><span class="hljs-keyword">If</span> <span class="hljs-keyword">any</span> threads are waiting <span class="hljs-keyword">on</span> this condition <span class="hljs-keyword">then</span> they are <span class="hljs-keyword">all</span> woken up. <span class="hljs-keyword">Each</span> thread must re-acquire the <span class="hljs-keyword">lock</span> <span class="hljs-keyword">before</span> it can <span class="hljs-keyword">return</span> <span class="hljs-keyword">from</span> await.<br>如果有线程在此condition下等待，那么它们都会被唤醒。每个线程必须重新获取锁，然后才能从await返回。<br><br>Implementation Considerations<br>实施注意事项<br>An implementation may (<span class="hljs-keyword">and</span> typically does) require that the <span class="hljs-keyword">current</span> thread hold the <span class="hljs-keyword">lock</span> associated <span class="hljs-keyword">with</span> this Condition <span class="hljs-keyword">when</span> this <span class="hljs-keyword">method</span> <span class="hljs-keyword">is</span> <span class="hljs-keyword">called</span>. Implementations must document this precondition <span class="hljs-keyword">and</span> <span class="hljs-keyword">any</span> actions taken <span class="hljs-keyword">if</span> the <span class="hljs-keyword">lock</span> <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> held. Typically, an <span class="hljs-keyword">exception</span> such <span class="hljs-keyword">as</span> IllegalMonitorStateException will be thrown.<br>当调用此方法时，实现可能（并且通常需要）要求当前线程持有与此条件相关联的锁。实现必须记录此前提条件以及在未持有锁的情况下所采取的任何操作。通常，将引发一个异常，如IllegalMonitorStateException。 <br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2025/08/21/Java/面试/JUC/java并发编程/javadoc文档/condition/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mean</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%9D%A2%E8%AF%95/JUC/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/javadoc%E6%96%87%E6%A1%A3/Lock/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%9D%A2%E8%AF%95/JUC/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/javadoc%E6%96%87%E6%A1%A3/wait()%E5%92%8Cnotify()%E6%96%B9%E6%B3%95/" title="">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

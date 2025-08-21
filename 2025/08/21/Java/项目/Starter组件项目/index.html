@@ -1,0 +1,678 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mean">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Starter组件项目用户白名单组件—WLST白名单过滤组件：使用aop实现的简单组件，后续可以扩展注册中心实时修改白名单配置。 将组件封装为starter组件时需要注意：  确保starter组件的通用性：在WhiteListAutoConfigure自动配置类中扫描配置文件WhiteListProperties.class，对组件中需要注册的Bean在配置类中进行注入，而不要在WhiteLis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mean&#39;s Blog">
+<meta property="og:url" content="http://example.com/2025/08/21/Java/%E9%A1%B9%E7%9B%AE/Starter%E7%BB%84%E4%BB%B6%E9%A1%B9%E7%9B%AE/index.html">
+<meta property="og:site_name" content="Mean&#39;s Blog">
+<meta property="og:description" content="Starter组件项目用户白名单组件—WLST白名单过滤组件：使用aop实现的简单组件，后续可以扩展注册中心实时修改白名单配置。 将组件封装为starter组件时需要注意：  确保starter组件的通用性：在WhiteListAutoConfigure自动配置类中扫描配置文件WhiteListProperties.class，对组件中需要注册的Bean在配置类中进行注入，而不要在WhiteLis">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/assets/image-20250217193924-ppoexfx.png">
+<meta property="article:published_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:modified_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:author" content="Mean">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/assets/image-20250217193924-ppoexfx.png">
+  
+  
+  
+  <title>Mean&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-21 13:48" pubdate>
+          2025年8月21日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          14 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Starter组件项目"><a href="#Starter组件项目" class="headerlink" title="Starter组件项目"></a>Starter组件项目</h1><h3 id="用户白名单组件—WLST"><a href="#用户白名单组件—WLST" class="headerlink" title="用户白名单组件—WLST"></a>用户白名单组件—WLST</h3><p>白名单过滤组件：使用aop实现的简单组件，后续可以扩展注册中心实时修改白名单配置。</p>
+<p>将组件封装为starter组件时需要注意：</p>
+<ol>
+<li><p>确保starter组件的通用性：在<code>WhiteListAutoConfigure</code>自动配置类中扫描配置文件<code>WhiteListProperties.class</code>，对组件中需要注册的Bean在配置类中进行注入，而不要在<code>WhiteListProperties.class</code>中使用@Component注解。</p>
+<blockquote>
+<p>因为引入jar包的项目不一定能扫描到（除非包名相同，这几乎不可能，若想使用，则需要在启动类上指定扫描的路径）</p>
+</blockquote>
+</li>
+<li><p>确保配置了正确的META-INF&#x2F;spring.factories文件，开启自动配置。</p>
+</li>
+</ol>
+<p>‍</p>
+<h3 id="Redis简化组件—RedisHelper"><a href="#Redis简化组件—RedisHelper" class="headerlink" title="Redis简化组件—RedisHelper"></a>Redis简化组件—RedisHelper</h3><p>动态代理、注解、Bean注册方式</p>
+<p>本组件使用动态代理的方式使用Jedis代理Redis方法，通过注解的方式识别需要代理的接口。在<code>XRedisFactoryBean</code>中创建代理对象并封装为Bean对象。</p>
+<p>在配置类<code>XRedisRegisterAutoConfiguration</code>中，除了创建Jedis的Bean对象外，通过下面代码的方式实现。</p>
+<p>扫描包中具有注解的接口文件，设置基本信息，设置自定的代理对象工厂<code>XRedisFactoryBean.class</code>，生成Bean对象。用@Import的方式将<code>XRedisRegister</code>加入到Spring容器中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">XRedisRegister</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">BeanFactoryAware</span>, ImportBeanDefinitionRegistrar &#123;<br><br>	<span class="hljs-keyword">private</span> BeanFactory beanFactory;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setBeanFactory</span><span class="hljs-params">(BeanFactory beanFactory)</span> <span class="hljs-keyword">throws</span> BeansException &#123;<br>		<span class="hljs-built_in">this</span>.beanFactory = beanFactory;<br>	&#125;<br><br>	<span class="hljs-comment">// 扫描所有配置了注解的接口方法</span><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">registerBeanDefinitions</span><span class="hljs-params">(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry)</span> &#123;<br>		<span class="hljs-keyword">try</span> &#123;<br>			<span class="hljs-keyword">if</span> (!AutoConfigurationPackages.has(<span class="hljs-built_in">this</span>.beanFactory)) &#123;<br>				<span class="hljs-keyword">return</span>;<br>			&#125;<br><br>			List&lt;String&gt; packages = AutoConfigurationPackages.get(<span class="hljs-built_in">this</span>.beanFactory);<br>			<span class="hljs-type">String</span> <span class="hljs-variable">basePackage</span> <span class="hljs-operator">=</span> StringUtils.collectionToCommaDelimitedString(packages);<br><br>			<span class="hljs-comment">// 获取扫描路径</span><br>			<span class="hljs-type">String</span> <span class="hljs-variable">packageSearchPath</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;classpath*:&quot;</span> + basePackage.replace(<span class="hljs-string">&#x27;.&#x27;</span>, <span class="hljs-string">&#x27;/&#x27;</span>) + <span class="hljs-string">&quot;/**/*.class&quot;</span>;<br>			<span class="hljs-comment">// 扫描所有class文件</span><br>			<span class="hljs-type">ResourcePatternResolver</span> <span class="hljs-variable">resourcePatternResolver</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PathMatchingResourcePatternResolver</span>();<br>			Resource[] resources = resourcePatternResolver.getResources(packageSearchPath);<br><br>			<span class="hljs-comment">// 获取所有带有注解的类，并为其创建bean对象</span><br>			<span class="hljs-keyword">for</span> (Resource resource : resources) &#123;<br>				<span class="hljs-comment">// 解析 .class 文件，提取类的元数据和注解信息。</span><br>				<span class="hljs-type">MetadataReader</span> <span class="hljs-variable">metadataReader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SimpleMetadataReader</span>(resource, ClassUtils.getDefaultClassLoader());<br>				<span class="hljs-comment">// 判断是否有注解</span><br>				<span class="hljs-type">XRedis</span> <span class="hljs-variable">annotation</span> <span class="hljs-operator">=</span> Class.forName(metadataReader.getClassMetadata().getClassName()).getAnnotation(XRedis.class);<br>				<span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> == annotation) <span class="hljs-keyword">continue</span>;<br><br>				<span class="hljs-type">ScannedGenericBeanDefinition</span> <span class="hljs-variable">beanDefinition</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ScannedGenericBeanDefinition</span>(metadataReader);<br>				<span class="hljs-type">String</span> <span class="hljs-variable">beanName</span> <span class="hljs-operator">=</span> Introspector.decapitalize(ClassUtils.getShortName(beanDefinition.getBeanClassName()));<br><br>				beanDefinition.setResource(resource);<br>				beanDefinition.setSource(resource);<br>				beanDefinition.setScope(<span class="hljs-string">&quot;singleton&quot;</span>);<br>				beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(beanDefinition.getBeanClassName());<br>				<span class="hljs-comment">// 设置bean的工厂方法</span><br>				beanDefinition.setBeanClass(XRedisFactoryBean.class);<br><br>				<span class="hljs-type">BeanDefinitionHolder</span> <span class="hljs-variable">definitionHolder</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BeanDefinitionHolder</span>(beanDefinition, beanName);<br>				registry.registerBeanDefinition(beanName, definitionHolder.getBeanDefinition());<br>			&#125;<br>		&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>			e.printStackTrace();<br>		&#125;<br><br>	&#125;<br>&#125;<br><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@Import(XRedisRegister.class)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MapperScannerRegistrarNotFoundConfiguration</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InitializingBean</span> &#123;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">afterPropertiesSet</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br><br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以进一步扩展出路由组件的部分</p>
+<p>‍</p>
+<h3 id="服务治理，超时熔断—HystrixStarter"><a href="#服务治理，超时熔断—HystrixStarter" class="headerlink" title="服务治理，超时熔断—HystrixStarter"></a>服务治理，超时熔断—HystrixStarter</h3><p>通过切面的方式对Hystrix进行封装，通过中间件的方式屏蔽底层应用的复杂性</p>
+<p>其余还是aop那一套。</p>
+<p>学习一下获取注解中的参数的方式：直接传入注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Around(&quot;aopPoint() &amp;&amp; @annotation(doHystrix)&quot;)</span>     <span class="hljs-comment">// 直接通过方法入参的方式可以更加方便拿到注解，处理起来也更优雅。？？？</span><br><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">doRouter</span><span class="hljs-params">(ProceedingJoinPoint jp, DoHystrix doHystrix)</span> <span class="hljs-keyword">throws</span> Throwable &#123;<br>	<span class="hljs-comment">// 获取注解中的参数</span><br>	<span class="hljs-comment">// Method method = getMethod(jp);</span><br>	<span class="hljs-comment">// DoHystrix doHystrixAnnotation = method.getAnnotation(DoHystrix.class);</span><br>	<span class="hljs-comment">// int timeoutValue = doHystrixAnnotation.timeoutValue();</span><br>	<span class="hljs-type">IValueService</span> <span class="hljs-variable">valueService</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HystrixValueImpl</span>();<br>	<span class="hljs-keyword">return</span> valueService.access(jp, getMethod(jp), doHystrix, jp.getArgs());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>‍</p>
+<h3 id="服务治理，调用限流—RateLimiterStarter"><a href="#服务治理，调用限流—RateLimiterStarter" class="headerlink" title="服务治理，调用限流—RateLimiterStarter"></a>服务治理，调用限流—RateLimiterStarter</h3><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000044488582">Guava限流神器：RateLimiter使用指南</a></p>
+<p>对某个接口创建限速桶的时候会存在多线程安全问题，若没有加锁，则初始阶段可能会有多个线程进入下面代码中的加锁部分，这就会导致在Map中重复添加元素，创建多个RateLimiter对象。</p>
+<blockquote>
+<p>但是还是会存在同时两个成功返回的情况？</p>
+<p>这是因为在取出一个令牌的时候，又进行了填充，就会出现两个。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RateLimiterValue</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">IValueService</span> &#123;<br><br>	<span class="hljs-comment">// 锁</span><br>	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Object</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Object <span class="hljs-title function_">access</span><span class="hljs-params">(ProceedingJoinPoint jp, Method method, DoRateLimiter doRateLimiter, Object[] args)</span> <span class="hljs-keyword">throws</span> Throwable &#123;<br><br>		System.out.println(<span class="hljs-string">&quot;RateLimiterValue&quot;</span>);<br>		<span class="hljs-comment">// 判断是否开启, 限速0表示不进行限速</span><br>		<span class="hljs-keyword">if</span> (<span class="hljs-number">0</span> == doRateLimiter.permitsPerSecond()) <span class="hljs-keyword">return</span> jp.proceed();<br><br>		<span class="hljs-type">String</span> <span class="hljs-variable">clazzName</span> <span class="hljs-operator">=</span> jp.getTarget().getClass().getName();<br>		<span class="hljs-type">String</span> <span class="hljs-variable">methodName</span> <span class="hljs-operator">=</span> method.getName();<br><br>		<span class="hljs-type">String</span> <span class="hljs-variable">key</span> <span class="hljs-operator">=</span> clazzName + <span class="hljs-string">&quot;.&quot;</span> + methodName;<br><br>		<span class="hljs-comment">// 存在线程安全问题</span><br>		<span class="hljs-keyword">synchronized</span> (lock) &#123;<br>			<span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> == Constants.rateLimiterMap.get(key)) &#123;<br>				Constants.rateLimiterMap.put(key, RateLimiter.create(doRateLimiter.permitsPerSecond()));<br>			&#125;<br>		&#125;<br><br>		<span class="hljs-type">RateLimiter</span> <span class="hljs-variable">rateLimiter</span> <span class="hljs-operator">=</span> Constants.rateLimiterMap.get(key);<br>		<span class="hljs-comment">// 运行程序前先获取令牌，若成功获取，则可以接着运行</span><br>		<span class="hljs-keyword">if</span> (rateLimiter.tryAcquire()) &#123;<br>			<span class="hljs-keyword">return</span> jp.proceed();<br>		&#125;<br><br>		<span class="hljs-keyword">return</span> JSON.parseObject(doRateLimiter.returnJson(), method.getReturnType());<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注意RateLimiter使用的是<strong>令牌桶</strong>实现的限流，但是它并没有容量限制，即无限容量。</p>
+<p>‍</p>
+<h3 id="服务治理，自定义拦截方法—MethodExtStarter"><a href="#服务治理，自定义拦截方法—MethodExtStarter" class="headerlink" title="服务治理，自定义拦截方法—MethodExtStarter"></a>服务治理，自定义拦截方法—MethodExtStarter</h3><p>为中间件提供一个可以扩展的出口，用户可以自定义执行方法。</p>
+<p>在注解中定义一个方法参数，然后用户自己定义方法，并在将自定义方法名传入注解中。在aop中通过反射的方式，按照注解中的名称获取到对应的方法，然后调用。</p>
+<p>示例：</p>
+<p>‍</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">doRouter</span><span class="hljs-params">(ProceedingJoinPoint jp, AccessInterceptor accessInterceptor)</span> <br><span class="hljs-keyword">throws</span> Throwable &#123;<br>...<br>	<span class="hljs-keyword">if</span> (!rateLimiter.tryAcquire()) &#123;<br>		<span class="hljs-keyword">return</span> fallbackMethodResult(jp, accessInterceptor.fallbackMethod()); <br>	&#125;<br>...<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 调用用户配置的回调方法，当拦截后，返回回调结果。</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">private</span> Object <span class="hljs-title function_">fallbackMethodResult</span><span class="hljs-params">(JoinPoint jp, String fallbackMethod)</span> <span class="hljs-keyword">throws</span> NoSuchMethodException, InvocationTargetException, IllegalAccessException &#123;<br>    <span class="hljs-type">Signature</span> <span class="hljs-variable">sig</span> <span class="hljs-operator">=</span> jp.getSignature();<br>    <span class="hljs-type">MethodSignature</span> <span class="hljs-variable">methodSignature</span> <span class="hljs-operator">=</span> (MethodSignature) sig;<br>    <span class="hljs-type">Method</span> <span class="hljs-variable">method</span> <span class="hljs-operator">=</span> jp.getTarget().getClass().getMethod(fallbackMethod, methodSignature.getParameterTypes());<br>    <span class="hljs-keyword">return</span> method.invoke(jp.getThis(), jp.getArgs());<br>&#125;<br><br><br><span class="hljs-meta">@AccessInterceptor(key = &quot;fingerprint&quot;, fallbackMethod = &quot;loginErr&quot;, permitsPerSecond = 1.0d, blacklistCount = 10)</span><br><span class="hljs-meta">@RequestMapping(value = &quot;login&quot;, method = RequestMethod.GET)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">login</span><span class="hljs-params">(String fingerprint, String uId, String token)</span> &#123;<br>    log.info(<span class="hljs-string">&quot;模拟登录 fingerprint:&#123;&#125;&quot;</span>, fingerprint);<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;模拟登录：登录成功 &quot;</span> + uId;<br>&#125;<br><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">loginErr</span><span class="hljs-params">(String fingerprint, String uId, String token)</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;频次限制，请勿恶意访问！&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>‍</p>
+<h3 id="服务治理中间件整合—GovernStarter"><a href="#服务治理中间件整合—GovernStarter" class="headerlink" title="服务治理中间件整合—GovernStarter"></a>服务治理中间件整合—GovernStarter</h3><p><a target="_blank" rel="noopener" href="https://gitcode.net/CreativeAlliance/springbootstarter-chicheng">https://gitcode.net/CreativeAlliance/springbootstarter-chicheng</a></p>
+<p><img src="/assets/image-20250217193924-ppoexfx.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p>整合的时候需要注意熔断服务是异步的，因此需要通过@Order()注解将该切面放到最后执行</p>
+<blockquote>
+<h3 id="1-异步方法的执行和-AOP-的切入顺序"><a href="#1-异步方法的执行和-AOP-的切入顺序" class="headerlink" title="1. 异步方法的执行和 AOP 的切入顺序"></a>1. <strong>异步方法的执行和 AOP 的切入顺序</strong></h3><ul>
+<li>AOP 切面通常是在当前线程中执行的。它会在目标方法被调用之前或之后拦截并执行逻辑。</li>
+<li>如果目标方法是一个异步方法（如 <code>@Async</code>），这个方法会立即返回，而实际的业务逻辑会在另一个线程中执行。由于切面通常是同步的，它可能会在异步方法执行之前已经返回了，导致页面空白或者数据未能正确返回。</li>
+</ul>
+<h3 id="2-问题的原因"><a href="#2-问题的原因" class="headerlink" title="2. 问题的原因"></a>2. <strong>问题的原因</strong></h3><ul>
+<li><strong>AOP 切面执行提前返回</strong>：异步方法调用时，AOP 可能在异步方法返回之前就已经完成了处理，导致页面没有等待异步方法执行完成，造成页面展示为空。</li>
+<li><strong>线程不一致性</strong>：异步方法会被提交到不同的线程执行，而 AOP 是在当前线程上运行的。这样，AOP 中的某些上下文（如事务管理、请求上下文等）可能没有正确传递到异步线程中。</li>
+<li><strong>缺少线程同步</strong>：AOP 切面没有等待异步任务执行完成，导致页面请求已返回而异步任务还在执行。</li>
+</ul>
+</blockquote>
+<p>‍</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2025/08/21/Java/项目/Starter组件项目/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mean</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%A1%B9%E7%9B%AE/DYX/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%A1%B9%E7%9B%AE/%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96/" title="">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

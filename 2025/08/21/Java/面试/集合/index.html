@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mean">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="集合集合ListArrayList动态数组 扩容：创建出一个**比原数组容量大一半**的空数组，然后将原数组中的元素复制到新数组中，最后将原数组引用指向新数组。 ​add(int index, E obj)：该方法需要对size和index进行比较，​size &gt;&#x3D; index​时才可以。而这个size需要注意的是，设置容量的构造函数中并不会修改size，它指向的是下一个插入的位置，即集合中">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mean&#39;s Blog">
+<meta property="og:url" content="http://example.com/2025/08/21/Java/%E9%9D%A2%E8%AF%95/%E9%9B%86%E5%90%88/index.html">
+<meta property="og:site_name" content="Mean&#39;s Blog">
+<meta property="og:description" content="集合集合ListArrayList动态数组 扩容：创建出一个**比原数组容量大一半**的空数组，然后将原数组中的元素复制到新数组中，最后将原数组引用指向新数组。 ​add(int index, E obj)：该方法需要对size和index进行比较，​size &gt;&#x3D; index​时才可以。而这个size需要注意的是，设置容量的构造函数中并不会修改size，它指向的是下一个插入的位置，即集合中">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/assets/image-20250225123211-9m38kfe.png">
+<meta property="article:published_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:modified_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:author" content="Mean">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/assets/image-20250225123211-9m38kfe.png">
+  
+  
+  
+  <title>Mean&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-21 13:48" pubdate>
+          2025年8月21日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h1><h2 id="集合-1"><a href="#集合-1" class="headerlink" title="集合"></a>集合</h2><h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><h4 id="ArrayList"><a href="#ArrayList" class="headerlink" title="ArrayList"></a>ArrayList</h4><p><strong>动态数组</strong></p>
+<p>扩容：创建出一个**<u>比原数组容量大一半</u>**的空数组，然后将原数组中的元素复制到新数组中，最后将原数组引用指向新数组。</p>
+<p>​<code>add(int index, E obj)</code>：该方法需要对size和index进行比较，<strong>​<code>size &gt;= index</code>​</strong>时才可以。而这个<code>size</code>需要注意的是，设置容量的构造函数中并不会修改<code>size</code>，它<strong>指向的是下一个插入的位置，即集合中元素的个数</strong>。在源码中，会将index之后的<strong>元素向后移动</strong>，可能会涉及到<strong>扩容</strong>。</p>
+<p>所有和index相关的操作，例如在指定位置插入、设置值、删除值，都需要对index和size进行校验，<u><strong>不允许在超过size的位置上的操作</strong></u>。</p>
+<h5 id="JDK8的扩容："><a href="#JDK8的扩容：" class="headerlink" title="JDK8的扩容："></a>JDK8的扩容：</h5><p>首先是构造函数，包括了有参和无参的，其中无参构造得到的集合是一个空数组，在添加第一个数的时候会<strong>触发扩容</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 将指定的元素追加到此列表的末尾。</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">add</span><span class="hljs-params">(E e)</span> &#123;<br>    <span class="hljs-comment">// 加元素之前，先调用ensureCapacityInternal方法</span><br>    ensureCapacityInternal(size + <span class="hljs-number">1</span>);  <span class="hljs-comment">// Increments modCount!!</span><br>    <span class="hljs-comment">// 这里看到ArrayList添加元素的实质就相当于为数组赋值</span><br>    elementData[size++] = e;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>扩容调用了<code>ensureCapacityInternal()</code>方法，其中调用了<code>calculateCapacity()</code>方法来获取当前需要的数组容量，传入<code>ensureExplicitCapacity()</code>方法进行扩容。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//判断是否需要扩容</span><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">ensureExplicitCapacity</span><span class="hljs-params">(<span class="hljs-type">int</span> minCapacity)</span> &#123;<br>    modCount++;<br>    <span class="hljs-comment">//判断当前数组容量是否足以存储minCapacity个元素</span><br>    <span class="hljs-keyword">if</span> (minCapacity - elementData.length &gt; <span class="hljs-number">0</span>)<br>        <span class="hljs-comment">//调用grow方法进行扩容</span><br>        grow(minCapacity);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>最终的扩容通过<code>grow()</code>方法实现，其中包括了几个关键点：</p>
+<ul>
+<li>通过位运算实现对旧数组容量扩容1.5倍：<code>int newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1);</code>​</li>
+<li>若扩容后仍然不能满足，则会直接使用<code>minCapacity</code>作为容量；</li>
+<li>通过数组复制的方式，得到扩容后的数组；</li>
+</ul>
+<h5 id="ensureCapacity-方法"><a href="#ensureCapacity-方法" class="headerlink" title="ensureCapacity 方法"></a><code>ensureCapacity</code> 方法</h5><p>实现提前预分配空间，减少了重复扩容带来多次元素移动的问题，可以提高性能。</p>
+<h5 id="线程安全："><a href="#线程安全：" class="headerlink" title="线程安全："></a>线程安全：</h5><ul>
+<li><p>Collections类的synchronizedList方法</p>
+</li>
+<li><p>CopyOnWriteArrayList（互斥锁ReentrantLock，在写数据的时候会复制一份，然后再副本上进行写，原数组还可以用于读，存在读滞后的问题）</p>
+</li>
+<li><p>Vector类</p>
+</li>
+</ul>
+<h4 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h4><p><strong>双向链表</strong></p>
+<p>遍历：for、foreach（不支持遍历过程中修改）、迭代器（修改操作需要使用<code>iterator</code>中的方法）</p>
+<p>线程安全方案：不是线程安全的，可以通过Collections来转化</p>
+<h5 id="获取元素："><a href="#获取元素：" class="headerlink" title="获取元素："></a>获取元素：</h5><p>无论是插入、删除还是添加，都需要先获取到对应位置上的node</p>
+<p>细节：有三种获取，分别是首、尾、任意位置获取，获取前会先判断当前的位置是在前半段还是后半段，从而决定从首还是尾开始遍历。</p>
+<p>‍</p>
+<blockquote>
+<p>LinkedList和ArrayList中toArray()方法的区别？</p>
+<p>LinkedList通过遍历逐个赋值的方式实现，而ArrayList通过<code>System.arraycopy()</code>和<code>Arrays.copyOf()</code>方法实现。</p>
+<p>​<code>public &lt;T&gt; T[] toArray(T[] a)&#123;&#125;</code>方法，若数组a的大小小于size，则会返回一个当前数组的副本；若a的大小大于size，则会将当前数组复制到a上，并返回a。因此最可靠的做法就是接收该方法的返回。</p>
+</blockquote>
+<p>‍</p>
+<h3 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h3><h4 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h4><h5 id="数据结构—散列表"><a href="#数据结构—散列表" class="headerlink" title="数据结构—散列表"></a>数据结构—<strong>散列表</strong></h5><p>1.8：首先通过对key进行哈希计算，得到hashcode，然后在数组上找到对应的位置：</p>
+<ul>
+<li>在获取时，找到该位置上的链表或者红黑树中找到key，然后获取对应的值（若不存在则返回null）</li>
+<li>在存储时，先在链表或者红黑树种查找是否存储过该key，若存在则覆盖，反之将该key-value存储到链表或者红黑树中</li>
+</ul>
+<p>1.7：采用的是数组+链表的方式实现的</p>
+<p>链表-&gt;红黑树：当put一个key-value后，链表的长度大于8的时候，会判断数组的大小，若大于64，则会将链表转换为红黑树。</p>
+<h5 id="1-8中的put-与resize-扩容"><a href="#1-8中的put-与resize-扩容" class="headerlink" title="1.8中的put()与resize()扩容"></a>1.8中的put()与resize()扩容</h5><p>在put()执行之前和之后都可能会进行扩容</p>
+<p>扩容的情况分为初始化扩容和超出阈值的扩容。</p>
+<ul>
+<li><p>put之前（初始化），哈希表为空的时候，进行扩容（扩容为默认大小16）</p>
+</li>
+<li><p>put之后，根据负载因子（0.75）得到的阈值，判断当前哈希表的容量情况，若超过阈值，则进行扩容：</p>
+<ul>
+<li>创建一个新的两倍大小的数组；</li>
+<li>若是节点红黑树，拆分后节点个数小于6个时，则会变回链表；</li>
+<li>若是链表，则可能需要拆分：将旧数据的key重新计算哈希，每一个桶内的元素的哈希值与旧容量大小的与运算<code>(e.hash &amp; oldCap) == 0</code>得到结果，若为0则<code>newTab[j] = loHead;</code>则位置不变，为1则<code>newTab[j + oldCap] = hiHead;</code>则移动到扩容的位置。通过该方式将所有的元素分配到新数组中（<a target="_blank" rel="noopener" href="https://blog.csdn.net/xindaxinda123/article/details/95617758">&amp;代替取模运算</a>）</li>
+<li>最后将元素进行插入，若没有冲突，即<strong>单个节点</strong>，则直接<strong>重新计算哈希</strong>后放入对应的位置，反之需要插入红黑树或者链表；</li>
+</ul>
+</li>
+</ul>
+<p><img src="/assets/image-20250225123211-9m38kfe.png" srcset="/img/loading.gif" lazyload alt="image">​</p>
+<h5 id="寻址算法"><a href="#寻址算法" class="headerlink" title="寻址算法"></a>寻址算法</h5><p>计算哈希</p>
+<p>二次哈希，添加扰动，实现均匀分布：<code>(h = key.hashCode()) ^ (h &gt;&gt;&gt; 16)</code>；</p>
+<blockquote>
+<p>为什么HashMap的数组长度一定是2的次幂？</p>
+</blockquote>
+<p>length的长度是<code>2^n</code>，使用与运算&amp;代替模运算，提高效率。</p>
+<p>因为除以<code>2^n</code>相当于向右移动n位，被移除的n位就是余数，所以与上<code>2^n - 1</code>即为余数。</p>
+<p>在扩容中，可以实现快速判断元素是否需要移动：</p>
+<p>​<code>e.hash &amp; oldCap == e.hash % oldCap</code>，仅当oldCap为<code>2^n</code>才成立。</p>
+<p>在计算位置的时候，可以实现位运算加速：</p>
+<p>​<code>(2^n - 1) &amp; hash</code>，得到在哈希数组上的位置。</p>
+<p>‍</p>
+<blockquote>
+<p>是否支持key为null，value为null？</p>
+</blockquote>
+<p>支持</p>
+<blockquote>
+<p>线程安全吗？</p>
+</blockquote>
+<p>不安全</p>
+<ul>
+<li>JDK 1.7 HashMap 采用数组 + 链表的数据结构，多线程背景下，在数组扩容的时候使用<u>头插法</u>，链表的顺序会改变，存在 Entry 链死循环和数据丢失问题。</li>
+<li>JDK 1.8 HashMap 采用数组 + 链表 + 红黑二叉树的数据结构，优化了 1.7 中数组扩容的方案，采用<u>尾插法</u>，解决了 Entry 链死循环和数据丢失问题。但是多线程背景下，put 方法存在数据覆盖的问题。</li>
+</ul>
+<p>‍</p>
+<h4 id="HashTable"><a href="#HashTable" class="headerlink" title="HashTable"></a>HashTable</h4><p>线程安全，使用synchronized实现的加锁，但是是对整张哈希表进行的，因此并发性不高。</p>
+<h4 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h4><h5 id="JDK1-7"><a href="#JDK1-7" class="headerlink" title="JDK1.7"></a>JDK1.7</h5><p>JDK1.7之前使用的是<span data-type="text" style="color: var(--b3-font-color1);">分段锁</span><strong>Segment</strong>实现的，Segment是一个继承自<strong>reentrantlock</strong>的可重入锁，总体看是一个二维数组，默认大小为16，将哈希桶HashEntry分成多个组，组可以进行扩容，每一个组使用一个可重入的锁，在对一个组进行写操作的时候，需要加锁，此时可以对其他的组进行读写操作。但是此时的哈希表的实现还是数组+链表的形式，因此存储效率不高。</p>
+<p><strong>分段锁的细节：</strong></p>
+<p>分段锁加在每一个<strong>Segment数组</strong>，该数组不能扩容，<u>默认大小为16</u>，即16线程并发。</p>
+<p>根据Segment单个节点的容量和负载因子创建一个<strong>HashEntry数组</strong>。HashEntry默认大小为2，负载因子为0.75。</p>
+<h5 id="JDK1-8​"><a href="#JDK1-8​" class="headerlink" title="JDK1.8​"></a>JDK1.8​</h5><p>JDK1.8之后使用的<span data-type="text" style="color: var(--b3-font-color1);">node+CAS+synchronized</span>实现，在每个node上，也就是每个哈希桶上，这样的锁更加细致，并发性更高。并且使用自旋锁，进一步提高并发性。同时哈希表优化为了数组+链表+红黑树的形式，提高了存储效率。</p>
+<p>ConcurrentHashMap具有较好的并发性能，同时保证了多线程下的安全性。</p>
+<h5 id="为什么1-8不使用reentrantlock？"><a href="#为什么1-8不使用reentrantlock？" class="headerlink" title="为什么1.8不使用reentrantlock？"></a>为什么1.8不使用reentrantlock？</h5><ol>
+<li>减少内存开销</li>
+</ol>
+<p>若使用<strong>Reentrantlock</strong>，则每个节点都需要<strong>继承AQS</strong>来获得<strong>同步支持</strong>，但是并不是所有的节点都需要，只有链表的头结点（红黑树的根节点）需要同步，这会带来大量的<strong>内存浪费</strong>。</p>
+<ol start="2">
+<li>JVM对synchronized的优化</li>
+</ol>
+<p>首先synchronized的锁是JVM直接支持的，在JVM运行时会采取：锁膨胀、锁粗化、锁消除、自适应自旋等操作。而Reentrantlock获取锁失败后可能会直接挂起，产生上下文切换的开销。因此使用synchronized可以有效降低锁的竞争和线程挂起带来的开销，性能更高，并发性更好。</p>
+<p>‍</p>
+<p>‍</p>
+<p>‍</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2025/08/21/Java/面试/集合/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mean</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%9D%A2%E8%AF%95/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%BB%84%E4%BB%B6/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%A1%B9%E7%9B%AE/DYX/" title="">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

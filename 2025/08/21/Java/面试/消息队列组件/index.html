@@ -1,0 +1,777 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mean">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="消息队列组件JDK阻塞队列存在JVM内存限制 ‍ Redis消息队列list结构基本实现使用链表模拟队列实现一个消息队列：LPUSH和RPOP相关命令分别实现入队和出队。 LPUSH和RPOP不会阻塞，当队列为空回返回Null，需要使用BLPUSH和BRPOP来实现阻塞等待。 12345671. 消费者阻塞等待l1队列，20sBRPOP l1 202. 生产者阻塞向队列l1放入e1和e2BLPUS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mean&#39;s Blog">
+<meta property="og:url" content="http://example.com/2025/08/21/Java/%E9%9D%A2%E8%AF%95/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%BB%84%E4%BB%B6/index.html">
+<meta property="og:site_name" content="Mean&#39;s Blog">
+<meta property="og:description" content="消息队列组件JDK阻塞队列存在JVM内存限制 ‍ Redis消息队列list结构基本实现使用链表模拟队列实现一个消息队列：LPUSH和RPOP相关命令分别实现入队和出队。 LPUSH和RPOP不会阻塞，当队列为空回返回Null，需要使用BLPUSH和BRPOP来实现阻塞等待。 12345671. 消费者阻塞等待l1队列，20sBRPOP l1 202. 生产者阻塞向队列l1放入e1和e2BLPUS">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/assets/image-20250327145306-iezo1lr.png">
+<meta property="og:image" content="http://example.com/assets/image-20250327145330-b09ljx1.png">
+<meta property="og:image" content="http://example.com/assets/image-20250327154045-uus36df.png">
+<meta property="og:image" content="http://example.com/assets/image-20250327154011-cen9yp9.png">
+<meta property="article:published_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:modified_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:author" content="Mean">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/assets/image-20250327145306-iezo1lr.png">
+  
+  
+  
+  <title>Mean&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-21 13:48" pubdate>
+          2025年8月21日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="消息队列组件"><a href="#消息队列组件" class="headerlink" title="消息队列组件"></a>消息队列组件</h1><h2 id="JDK阻塞队列"><a href="#JDK阻塞队列" class="headerlink" title="JDK阻塞队列"></a>JDK阻塞队列</h2><p>存在JVM内存限制</p>
+<p>‍</p>
+<h2 id="Redis消息队列"><a href="#Redis消息队列" class="headerlink" title="Redis消息队列"></a>Redis消息队列</h2><h3 id="list结构"><a href="#list结构" class="headerlink" title="list结构"></a>list结构</h3><h4 id="基本实现"><a href="#基本实现" class="headerlink" title="基本实现"></a>基本实现</h4><p>使用链表模拟队列实现一个消息队列：LPUSH和RPOP相关命令分别实现入队和出队。</p>
+<p>LPUSH和RPOP不会阻塞，当队列为空回返回Null，需要使用<strong>BLPUSH</strong>和<strong>BRPOP</strong>来实现<strong>阻塞等待</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs redis">1. 消费者阻塞等待l1队列，20s<br>BRPOP l1 20<br>2. 生产者阻塞向队列l1放入e1和e2<br>BLPUSH l1 e1 e2<br>3. 消费者被唤醒，将e1出队<br>4. 消费者继续将e2出队<br>BRPOP l1 20<br></code></pre></td></tr></table></figure>
+
+<h4 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h4><p>优点：</p>
+<ul>
+<li>利用<strong>Redis存储</strong>，不受限于JVM内存上限；</li>
+<li>基于Redis的<strong>持久化机制</strong>，数据<u>安全性</u>有保证；</li>
+<li>可以满足消息的<strong>有序性</strong>；</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>无法避免**<u>消息丢失–消息被取出就没了</u>**；</li>
+<li>只支持<u><strong>单消费者–不支持消息的重复消费</strong></u>；</li>
+</ul>
+<p>‍</p>
+<h3 id="PubSub"><a href="#PubSub" class="headerlink" title="PubSub"></a>PubSub</h3><p>Redis2.0版本引入的消息传递模型，消费者可以订阅一个或者多个**<u>channel</u>**，生产者向对应的channel发送消息后，所有的相关订阅者都可以收到消息。</p>
+<h4 id="基本实现-1"><a href="#基本实现-1" class="headerlink" title="基本实现"></a>基本实现</h4><ul>
+<li><strong>SUBSCRIBE channel [channel]</strong> ：订阅一个或者多个频道；</li>
+<li><strong>PUBLISH channel msg</strong>：向一个频道发送消息；</li>
+<li><strong>PSUBSCRIBE pattern [pattern]</strong> ：订阅格式匹配的频道；</li>
+</ul>
+<p>pattern一共有三种：</p>
+<ul>
+<li>h?llo：至多匹配1个任意单个字符；</li>
+<li>h*llo：至少匹配0个任意相同的字符；</li>
+<li>h[ea]llo：指定可以匹配的单个字符；</li>
+</ul>
+<h4 id="优缺点-1"><a href="#优缺点-1" class="headerlink" title="优缺点"></a>优缺点</h4><p>优点：采用<strong>发布订阅模式</strong>，支持多生产、多消费</p>
+<p>缺点：</p>
+<ul>
+<li><strong>不支持数据持久化</strong>；</li>
+<li>不能避免<strong>消息丢失</strong>（发送未被订阅的频道，消息直接丢失）；</li>
+<li><strong>消息堆积</strong>有上限（消息堆积在消费者），超出后消息丢失；</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<h3 id="Stream"><a href="#Stream" class="headerlink" title="Stream"></a>Stream</h3><p>Redis5.0引入的**<u>新数据类型</u>**，实现了完善的消息队列功能。</p>
+<h4 id="基本实现-2"><a href="#基本实现-2" class="headerlink" title="基本实现"></a>基本实现</h4><ul>
+<li>发送消息的命令：XADD</li>
+</ul>
+<p><img src="/assets/image-20250327145306-iezo1lr.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p>​<code>XADD users * name jack age 21</code>：创建名为 users 的队列，并向其中发送一个消息，内容为{ name&#x3D;jack, age&#x3D;21 }，并使用Redis自动生成ID。返回ID。</p>
+<ul>
+<li>读取消息命令：XREAD</li>
+</ul>
+<p><img src="/assets/image-20250327145330-b09ljx1.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p>一条消息可以被多个队列重复读取，消息不会被删除，永久存在。</p>
+<p>读取第0条数据：<code>XREAD COUNT 1 STREAMS s1 0</code>​</p>
+<p>读取最新的消息：<code>XREAD COUNT 1 [BLOCK 0] STREAMS s1 $</code>​</p>
+<h4 id="XREAD命令的优缺点"><a href="#XREAD命令的优缺点" class="headerlink" title="XREAD命令的优缺点"></a>XREAD命令的优缺点</h4><p>优点：</p>
+<ul>
+<li>消息可以回溯–读完消息不丢失；</li>
+<li>一个消息可以被多个消费者读取；</li>
+<li>可以阻塞读取；</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>有<strong>消息漏读</strong>的风险–处理消息期间来的消息会漏读；</li>
+</ul>
+<h4 id="消费者组模式"><a href="#消费者组模式" class="headerlink" title="消费者组模式"></a>消费者组模式</h4><h5 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h5><p>将多个消费者划分到一个组中，监听同一个队列（类似于线程池）。当前组中的消费者都是处理相同队列的消息，不同的组处理不同队列的消息。具备下列特点：</p>
+<ul>
+<li>消息分流：消息不是重复消费，而是**<u>同组竞争消费</u><strong>，从而</strong>加快消息的处理速度**；</li>
+<li>消息标示：记录最后一个被处理的消息，这样即使消费者宕机，也可以根据标示找到读取的位置。<strong><u>保证每一条消息都会被消费</u></strong>；</li>
+<li>消息确认：<strong>消费中的消息处于</strong>​**<u>pending状态</u><strong>，并存入一个</strong>pending-list**。处理完成后需要通过<strong>XACK来</strong>​**<u>确认消息</u>**，标记消息为已处理，并从pending-list中移除。pending的消息最终都会被消费；</li>
+</ul>
+<p>‍</p>
+<h5 id="创建消费者组"><a href="#创建消费者组" class="headerlink" title="创建消费者组"></a>创建消费者组</h5><p><img src="/assets/image-20250327154045-uus36df.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p>删除消费者组、添加消费者、删除消费者 </p>
+<h5 id="从消费者组读取"><a href="#从消费者组读取" class="headerlink" title="从消费者组读取"></a>从消费者组读取</h5><p><img src="/assets/image-20250327154011-cen9yp9.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h5 id="消费者确认消费"><a href="#消费者确认消费" class="headerlink" title="消费者确认消费"></a>消费者确认消费</h5><p>​<code>XACK 队列名称 消费者组 id [id]</code>​</p>
+<h5 id="查看pending队列"><a href="#查看pending队列" class="headerlink" title="查看pending队列"></a>查看pending队列</h5><p>XPENDING 队列名称 消费者组 [[消息的空闲时间] start end count[consumer]]</p>
+<p>start：起始id</p>
+<p>end：结束id</p>
+<p>count：获取的数量</p>
+<p>consumer：指定从哪一个消费者的pending-list获取</p>
+<h4 id="优缺点-2"><a href="#优缺点-2" class="headerlink" title="优缺点"></a>优缺点</h4><ul>
+<li><p>消息可回溯—持久化；</p>
+</li>
+<li><p>可以多消费者争抢消息，加快消费速度；</p>
+</li>
+<li><p>可以阻塞读取；</p>
+</li>
+<li><p>消息标记，没有漏读的风险；</p>
+</li>
+<li><p>有消息确认机制，保证消费者获取的消息都会被消费（每一个消费者都有一个pending-list）；</p>
+</li>
+</ul>
+<p>‍</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Redis消息队列</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>List</th>
+<th>PubSub</th>
+<th>Stream</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>类型</td>
+<td>数据结构</td>
+<td>模型</td>
+<td>数据结构</td>
+</tr>
+<tr>
+<td>消息持久化</td>
+<td>支持</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>阻塞读取</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>消息堆积处理</td>
+<td>受限于内存空间，通过增加消费者来解决</td>
+<td>受限于消费者（堆积在消费者）缓冲区大小</td>
+<td>受限于队列长度，利用消费者组加快消费，减少堆积</td>
+</tr>
+<tr>
+<td>消息确认机制</td>
+<td>无</td>
+<td>无</td>
+<td>有</td>
+</tr>
+<tr>
+<td>消息回溯</td>
+<td>不支持</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+</tbody></table>
+<p>‍</p>
+<h3 id="Stream消息队列的应用"><a href="#Stream消息队列的应用" class="headerlink" title="Stream消息队列的应用"></a>Stream消息队列的应用</h3><p>‍</p>
+<p>‍</p>
+<h2 id="RabbitMQ"><a href="#RabbitMQ" class="headerlink" title="RabbitMQ"></a>RabbitMQ</h2><h3 id="关键组成部分"><a href="#关键组成部分" class="headerlink" title="关键组成部分"></a>关键组成部分</h3><p>生产者与消费者、Broker、Exchange、Queue</p>
+<h4 id="RabbitMQ如何保证消息不丢失？"><a href="#RabbitMQ如何保证消息不丢失？" class="headerlink" title="RabbitMQ如何保证消息不丢失？"></a>RabbitMQ如何保证消息不丢失？</h4><p>生产者确认机制、消费者确认机制和重发机制、<span data-type="text" style="color: var(--b3-font-color1);">持久化</span>机制（生产者、交换机、消息队列）</p>
+<p>‍</p>
+<h4 id="RabbitMQ的消息重复消费怎么解决？"><a href="#RabbitMQ的消息重复消费怎么解决？" class="headerlink" title="RabbitMQ的消息重复消费怎么解决？"></a>RabbitMQ的消息重复消费怎么解决？</h4><p>设置消息的唯一id，检查消息是否被消费</p>
+<p>考虑幂等的方式解决，例如分布式锁、数据库锁</p>
+<p>‍</p>
+<h4 id="RabbitMQ中的死信交换机是什么（延迟队列有了解吗）？"><a href="#RabbitMQ中的死信交换机是什么（延迟队列有了解吗）？" class="headerlink" title="RabbitMQ中的死信交换机是什么（延迟队列有了解吗）？"></a>RabbitMQ中的死信交换机是什么（延迟队列有了解吗）？</h4><p>‍</p>
+<h4 id="消息堆积怎么解决？"><a href="#消息堆积怎么解决？" class="headerlink" title="消息堆积怎么解决？"></a>消息堆积怎么解决？</h4><p>增加消费者、增加队列容量（惰性队列存储到磁盘）、消费者开启线程池</p>
+<p>‍</p>
+<h4 id="RabbitMQ的高可用？"><a href="#RabbitMQ的高可用？" class="headerlink" title="RabbitMQ的高可用？"></a>RabbitMQ的高可用？</h4><p>普通集群、镜像队列集群、仲裁队列集群</p>
+<p>‍</p>
+<p>‍</p>
+<h2 id="Kafka"><a href="#Kafka" class="headerlink" title="Kafka"></a>Kafka</h2><h4 id="如何保证消息不丢失？"><a href="#如何保证消息不丢失？" class="headerlink" title="如何保证消息不丢失？"></a>如何保证消息不丢失？</h4><p>‍</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2025/08/21/Java/面试/消息队列组件/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mean</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%9D%A2%E8%AF%95/JVM/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%9D%A2%E8%AF%95/%E9%9B%86%E5%90%88/" title="">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

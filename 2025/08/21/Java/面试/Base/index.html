@@ -1,0 +1,745 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mean">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Base为什么说 Java 语言“解释与编译并存”。编译型语言：将源程序一次性编译成特定平台（操作系统）可以运行的机器码。编码效率低，执行效率高。 解释型语言：将源程序逐行翻译成特定平台的机器码并执行。编码效率高，执行效率低。 Java将程序编译成中间码，即class文件，然后在其运行时进行编译。 Java泛型、类型擦除泛型关于Java泛型，它可以实现将类型参数化，主要的实现有泛型类、泛型接口和泛">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mean&#39;s Blog">
+<meta property="og:url" content="http://example.com/2025/08/21/Java/%E9%9D%A2%E8%AF%95/Base/index.html">
+<meta property="og:site_name" content="Mean&#39;s Blog">
+<meta property="og:description" content="Base为什么说 Java 语言“解释与编译并存”。编译型语言：将源程序一次性编译成特定平台（操作系统）可以运行的机器码。编码效率低，执行效率高。 解释型语言：将源程序逐行翻译成特定平台的机器码并执行。编码效率高，执行效率低。 Java将程序编译成中间码，即class文件，然后在其运行时进行编译。 Java泛型、类型擦除泛型关于Java泛型，它可以实现将类型参数化，主要的实现有泛型类、泛型接口和泛">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-21T05:48:52.000Z">
+<meta property="article:modified_time" content="2025-08-21T05:48:52.000Z">
+<meta property="article:author" content="Mean">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Mean&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-21 13:48" pubdate>
+          2025年8月21日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Base"><a href="#Base" class="headerlink" title="Base"></a>Base</h1><h3 id="为什么说-Java-语言“解释与编译并存”。"><a href="#为什么说-Java-语言“解释与编译并存”。" class="headerlink" title="为什么说 Java 语言“解释与编译并存”。"></a>为什么说 Java 语言“解释与编译并存”。</h3><p>编译型语言：将源程序一次性编译成特定平台（操作系统）可以运行的机器码。编码效率低，执行效率高。</p>
+<p>解释型语言：将源程序逐行翻译成特定平台的机器码并执行。编码效率高，执行效率低。</p>
+<p>Java将程序编译成中间码，即class文件，然后在其运行时进行编译。</p>
+<h3 id="Java泛型、类型擦除"><a href="#Java泛型、类型擦除" class="headerlink" title="Java泛型、类型擦除"></a>Java泛型、类型擦除</h3><h5 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h5><p>关于Java泛型，它可以实现将类型参数化，主要的实现有<strong>泛型类</strong>、<strong>泛型接口</strong>和<strong>泛型方法</strong>。</p>
+<p>泛型的使用在具体对象创建的时候指定了数据类型，当在使用的时候，必须要传入与指定类型相匹配的参数，提供了一种<span data-type="text" style="color: var(--b3-font-color1);">类型安全检测</span>的机制。</p>
+<p><strong>泛型类</strong>的实现有很多，例如List和ArrayList都使用了泛型来实现在对象创建的时候定义类型。</p>
+<p><strong>泛型接口</strong>的类型参数在其被继承或者被实现的时候确定，也可以接着定义泛型类，需要保证泛型类型相同。</p>
+<p><strong>泛型方法</strong>的参数是在调用方法的时候传递的，注意泛型方法中的泛型必须是显示定义的，与类中的泛型不同，例如<code>public &lt;E&gt; void show_3(E t)&#123;&#125;</code>。</p>
+<p>总结：</p>
+<ol>
+<li>泛型的使用提供了<u>类型扩展的能力</u>，更加符合<u>面相对象的特性</u>、提供了<u>类安全检测机制</u>、程序的<u>可读性提高</u>；</li>
+<li>类中的静态成员不能定义为泛型，而静态方法可以；</li>
+</ol>
+<h5 id="泛型类型擦除"><a href="#泛型类型擦除" class="headerlink" title="泛型类型擦除"></a>泛型类型擦除</h5><p>类型擦除指的是在编译期间，编译器会<strong>擦除</strong>代码中的所有泛型语法并完成一些类型转换。因此在<strong>运行的时候是没有泛型的信息的</strong>。</p>
+<p><em><strong><u>擦除的过程实现的是类型转换</u></strong></em>，默认泛型的父类为Object，那么在擦除的时候就会将泛型类型替换为Object。但是若是形如<T extends Number>的泛型，其父类就是Number，泛型擦除的时候会替换为Number。</p>
+<p>总结：</p>
+<ol>
+<li>泛型信息只在编译期间存在，编译期间执行擦除，运行期间没有泛型信息。</li>
+<li>类型擦除后，<u>运行期间若要使用对象的信息</u>，编译器底层会进行<u>自动类型转换</u>，转换为指定的泛型的类型。</li>
+</ol>
+<blockquote>
+<p>案例，下面的代码会编译错误，因为编译擦除</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GenericTypes</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">method</span><span class="hljs-params">(List&lt;String&gt; list)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;invoke method(List&lt;String&gt; list)&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">method</span><span class="hljs-params">(List&lt;Integer&gt; list)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;invoke method(List&lt;Integer&gt; list)&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>此外，<strong>异常不能使用泛型</strong>，也是因为泛型擦除</p>
+</blockquote>
+<h5 id="泛型通配符—界限约束"><a href="#泛型通配符—界限约束" class="headerlink" title="泛型通配符—界限约束"></a>泛型通配符—界限约束</h5><p>泛型之间是*<u>没有向下转型的概念</u>*，即可以创建<code>List a = new ArrayList()</code> ，但是不能创建<code>List&lt;Number&gt; a = new ArrayList&lt;Integer&gt;()</code>（意图实现Number包容其子类Integer）；</p>
+<p>但是在实际应用中，存在一个方法需要处理多种类型的泛型参数，即想要实现一个方法，同时可以接收Integer和Number类型。因此引入了泛型通配符来解决这个问题。</p>
+<p>我们在方法中使用泛型类型的时候也可以不指定其具体的泛型，而是可以在调用的时候指定，在方法定义中使用<strong>泛型通配符</strong>。</p>
+<p><strong>泛型通配符有 3 种形式：</strong></p>
+<ol>
+<li><strong>&lt;?&gt;</strong>   <strong>：被称作无限定的通配符。</strong></li>
+<li><strong>&lt;? extends T&gt;</strong>   <strong>：被称作有</strong>​**<u>上界</u><strong>​</strong>的通配符，内小外大，取出来可以向上转型，但是放进去不行。**</li>
+<li><strong>&lt;? super T&gt;</strong>   <strong>：被称作有</strong>​**<u>下界</u><strong>​</strong>的通配符，外小内大，父类都可以放进去，但是取出来只能是Object，不能向下转型。**</li>
+</ol>
+<? extends T>与<? super T> 对比  
+（1）对于<? extends 类型>，编译器将**只允许读操作**，**不允许写操作**。即只可以取值，不可以设值。
+
+对于写操作，必须要写入<? extends 类型>，这是无法实现的，因为其子类的实现各有不同，无法确定；对于读操作，可以使用T类型来接收参数。
+
+（2）对于<? super 类型>，编译器将**只允许写操作**，**不允许读操作**。即只可以设值（比如 set 操作），不可以取值（比如 get 操作）。
+
+对于写操作，只要是T的父类，那么都可以写入；而读操作，只能通过Object来接收，因为下界T之上的具体类型不确定。
+
+‍
+
+##### 相关题目
+
+###### 1.Java 中 List< String > 和原始类型 List 之间的区别 **。**
+
+指定了泛型可以**保证类型安全**，List< String > 中只可以存入String类型的参数。而原始类型 List允许存入任何类型的参数，那么在使用的时候就<u>**涉及到数据类的判断和类型转换**</u>
+
+###### 2.（原始类型的检查相关）**你可以把 List&lt;**  **String**  **&gt;**  **传递给一个接受 List&lt;**  **Object**  **&gt;**  **参数的方法吗？**
+
+不能，指定了泛型的类型后，对其原始类型进行检查，并且泛型是不存在向上转型的概念的。
+
+其他：
+
+**Java 中 List&lt;**  **Object**  **&gt;**  **和原始类型 List 之间的区别?**
+
+List<Object>作为方法参数只能接受 List<Object>，而List可以接受任意泛型类型的List，但是缺少了类型安全的检测。
+
+**Java 中 List&lt;?&gt;**  **和 List&lt;**  **Object**  **&gt;**  **之间的区别是什么?**
+
+List<?><p>的允许任意类型的匹配，同时也可以进行类型检查。</p>
+<h6 id="3-List-和-List-之间有什么区别"><a href="#3-List-和-List-之间有什么区别" class="headerlink" title="3.List&lt;? extends T&gt;  和 List  &lt;? super T&gt;  之间有什么区别 ?"></a>3.<strong>List&lt;? extends T&gt;</strong>  <strong>和 List</strong>  <strong>&lt;? super T&gt;</strong>  <strong>之间有什么区别 ?</strong></h6><p>指定了泛型的上界和下界，对读取和赋值有不同的限制。</p>
+<h6 id="4-什么是泛型中的限定通配符和非限定通配符"><a href="#4-什么是泛型中的限定通配符和非限定通配符" class="headerlink" title="4.什么是泛型中的限定通配符和非限定通配符 ?"></a>4.<strong>什么是泛型中的限定通配符和非限定通配符 ?</strong></h6><?>是非限定
+
+###### 5.**Java的泛型是如何工作的 ? 什么是类型擦除 ?**
+
+泛型的正常工作是<u>**依赖编译器**</u>在编译源码的时候，先进行**<u>类型检查</u>**，然后进行**<u>类型擦除</u>**并且在类型参数出现的地方<u>**插入强制转换**</u>的相关指令实现的。
+
+由编译器操作、**类型检查**和**<u>擦除</u>**、插入强制转换命令。
+
+此外泛型是一种编译器层的优化，泛型擦除操作可以保证代码依旧可以运行。
+
+###### 6.**Java中的泛型是什么 ? 使用泛型的好处是什么?**
+
+参数化类型的机制、提高代码的泛化能力，更加通用。
+
+泛型提供了编译期间的类型检查，确保了类型安全，避免了运行时异常。
+
+‍
+
+### 为什么重写 equals() 时要重写 hashCode() 方法？
+
+在哈希集合中，首先默认<u>先使用hashCode()方法比较的是对象的哈希值是否相同</u>，若**<u>相同再使用equals()</u>** 方法来比较两个对象是否是同一个对象。
+
+当重写了equals()方法后，也就意味着对象的比较可能不再是对象了，而是对象中的属性；若不重写hashCode()，依旧是比较对象，那么比较的逻辑就不对了。
+
+总结：hashcode和equals的比较逻辑需要对应。
+
+### 序列化与反序列化相关
+
+[参考](https://javaguide.cn/java/basis/serialization.html)
+
+常用的使用场景：
+
+1.数据的存储，涉及到数据格式的转换和字节输入、输出的转换。
+
+2.网络通信：网络中发送数据需要将其序列化为字节流，接收端则需要反序列化。
+
+3.分布式系统：分布式系统中的不同节点之间需要通过序列化和反序列化来进行数据交换。
+
+4.进程间的通信
+
+其他
+
+‍
+
+### 抽象类和接口
+
+对于普通的类来说，只可以单继承，但可以实现多个接口；
+
+对于**接口**来说，可以继承，并且**可以多继承**；
+
+对于抽象类和普通类一样，只能单继承；
+
+抽象类实现接口后，可以不需要实现接口中的方法，而是交由子类来实现。
+
+抽象类更多的是**代码复用**，而接口则是一种类的**行为规范**。
+
+接口中定义成员变量有要求，只能是`public static final` 类型的；而抽象类中没有这个要求；
+
+接口中，在Java8以前，方法默认都是`public abstract`的抽象方法，Java8后可以使用`default`(可以被覆盖)和`static`(不可以被覆盖)修饰方法，Java9后可以包含`private`修饰的方法(接口内部使用的方法)。
+
+‍
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2025/08/21/Java/面试/Base/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mean</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/Profiler/%E6%9C%AA%E5%91%BD%E5%90%8D/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%9D%A2%E8%AF%95/%E6%9C%AA%E5%91%BD%E5%90%8D/" title="">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,645 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mean">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="wait()和notify()方法wait()方法的javadoc文档1234567891011121314151617Causes the current thread to wait until another thread invokes the notify() method or the notifyAll() method for this object. In other words">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mean&#39;s Blog">
+<meta property="og:url" content="http://example.com/2025/08/21/Java/%E9%9D%A2%E8%AF%95/JUC/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/javadoc%E6%96%87%E6%A1%A3/wait()%E5%92%8Cnotify()%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:site_name" content="Mean&#39;s Blog">
+<meta property="og:description" content="wait()和notify()方法wait()方法的javadoc文档1234567891011121314151617Causes the current thread to wait until another thread invokes the notify() method or the notifyAll() method for this object. In other words">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:modified_time" content="2025-08-21T05:48:54.000Z">
+<meta property="article:author" content="Mean">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Mean&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-21 13:48" pubdate>
+          2025年8月21日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          15 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="wait-和notify-方法"><a href="#wait-和notify-方法" class="headerlink" title="wait()和notify()方法"></a>wait()和notify()方法</h1><h3 id="wait-方法的javadoc文档"><a href="#wait-方法的javadoc文档" class="headerlink" title="wait()方法的javadoc文档"></a>wait()方法的javadoc文档</h3><figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs smali"><br>Causes the current thread to wait until another thread invokes the notify() method<span class="hljs-built_in"> or </span>the notifyAll() method for this object. In other words, this method behaves exactly as<span class="hljs-built_in"> if </span>it simply performs the call wait(0).<br>使当前线程等待，直到另一个线程为此对象调用notify()方法或notifyAll()方法。换句话说，这个方法的行为就像它只是执行调用等待（0）一样。<br><br>The current thread must own this object&#x27;s monitor. The thread releases ownership of this<span class="hljs-built_in"> monitor </span>and waits until another thread notifies threads waiting on this object&#x27;s<span class="hljs-built_in"> monitor </span>to wake up either through a call to the notify method<span class="hljs-built_in"> or </span>the notifyAll method. The thread then waits until it can re-obtain ownership of the<span class="hljs-built_in"> monitor </span>and resumes execution.<br>当前线程必须拥有此对象的监视器(锁) MyTest1.java。当前线程释放此监视器的所有权(即释放锁)并等待，直到另一个线程通过调用notify方法或notifyAll方法通知等待此对象监视器唤醒的线程。然后线程等待，直到它可以重新获得监视器的所有权并继续执行。<br><br>As in the one argument version, interrupts<span class="hljs-built_in"> and </span>spurious wakeups are possible,<span class="hljs-built_in"> and </span>this method should always be used in a loop:<br>在单参数版本中，中断和虚假唤醒是可能的，此方法应始终在循环中使用： <br>           synchronized (obj) &#123;<br>               while (&lt;condition does<span class="hljs-built_in"> not </span>hold&gt;)<br>                   obj.wait();<br><span class="hljs-keyword">               .</span>.. // Perform action appropriate to condition<br>           &#125;<br><br>This method should only be called by a thread that is the owner of this object&#x27;s monitor. See the notify method for a description of the ways in which a thread can become the owner of a monitor.<br>此方法只能由作为此对象监视器所有者的线程调用。有关线程成为监视器所有者的方式的描述，请参见notify方法。<br></code></pre></td></tr></table></figure>
+
+<h3 id="wait-long-timeout-方法"><a href="#wait-long-timeout-方法" class="headerlink" title="wait(long timeout)方法"></a>wait(long timeout)方法</h3><figure class="highlight pony"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs pony"><span class="hljs-type">The</span> current thread must own <span class="hljs-literal">this</span> object&#x27;s monitor.<br>当前线程必须拥有此对象的监视器。<br><br><span class="hljs-type">This</span> method causes the current thread (call it <span class="hljs-type">T</span>) to place itself <span class="hljs-keyword">in</span> the wait set <span class="hljs-keyword">for</span> <span class="hljs-literal">this</span> <span class="hljs-keyword">object</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">then</span> to relinquish any <span class="hljs-keyword">and</span> all synchronization claims on <span class="hljs-literal">this</span> <span class="hljs-keyword">object</span>. <span class="hljs-type">Thread</span> <span class="hljs-type">T</span> becomes disabled <span class="hljs-keyword">for</span> thread scheduling purposes <span class="hljs-keyword">and</span> lies dormant <span class="hljs-keyword">until</span> one of four things happens:<br>此方法会导致当前线程（称为<span class="hljs-type">T</span>）将自身放置在此对象的等待集中，然后放弃对此对象的任何和所有同步声明。出于线程调度的目的，线程<span class="hljs-type">T</span>将被禁用，并处于休眠状态，直到发生以下四种情况之一：<br><span class="hljs-number">1.</span><span class="hljs-type">Some</span> other thread invokes the notify method <span class="hljs-keyword">for</span> <span class="hljs-literal">this</span> <span class="hljs-keyword">object</span> <span class="hljs-keyword">and</span> thread <span class="hljs-type">T</span> happens to <span class="hljs-keyword">be</span> arbitrarily chosen <span class="hljs-keyword">as</span> the thread to <span class="hljs-keyword">be</span> awakened.<br>其他一些线程为此对象调用notify方法，而线程<span class="hljs-type">T</span>恰好被任意选择为要唤醒的线程。<br><span class="hljs-number">2.</span><span class="hljs-type">Some</span> other thread invokes the notifyAll method <span class="hljs-keyword">for</span> <span class="hljs-literal">this</span> <span class="hljs-keyword">object</span>.<br>其他一些线程为此对象调用notifyAll方法。<br><span class="hljs-number">3.</span><span class="hljs-type">Some</span> other thread interrupts thread <span class="hljs-type">T</span>.<br>另一个线程中断线程<span class="hljs-type">T</span>。<br><span class="hljs-number">4.</span><span class="hljs-type">The</span> specified amount of real time has elapsed, more <span class="hljs-keyword">or</span> less. <span class="hljs-type">If</span> timeout <span class="hljs-keyword">is</span> zero, however, <span class="hljs-keyword">then</span> real time <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> taken into consideration <span class="hljs-keyword">and</span> the thread simply waits <span class="hljs-keyword">until</span> notified.<br>指定的实时时间或多或少已经过去。但是，如果超时为零，则不考虑真实的时间，线程只需等待通知。<br><br><span class="hljs-type">A</span> thread can also wake up without being notified, interrupted, <span class="hljs-keyword">or</span> timing out, a so-called spurious wakeup. <span class="hljs-type">While</span> <span class="hljs-literal">this</span> will rarely occur <span class="hljs-keyword">in</span> practice, applications must guard against it by testing <span class="hljs-keyword">for</span> the condition that should have caused the thread to <span class="hljs-keyword">be</span> awakened, <span class="hljs-keyword">and</span> continuing to wait <span class="hljs-keyword">if</span> the condition <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> satisfied. <span class="hljs-type">In</span> other words, waits should always occur <span class="hljs-keyword">in</span> loops, like <span class="hljs-literal">this</span> one<br>线程也可以在不被通知、中断或超时的情况下唤醒，即所谓的虚假唤醒。虽然这种情况在实践中很少发生，但应用程序必须通过测试本应导致线程被唤醒的条件，并在条件不满足时也要继续等待来防范这种情况。换句话说，等待应该总是以循环的形式出现，就像下面这样  <span class="hljs-type">MyObject</span>.java 中修改后带<span class="hljs-keyword">while</span>的代码<br>           synchronized (obj) &#123;<br>               <span class="hljs-keyword">while</span> (&lt;condition does <span class="hljs-keyword">not</span> hold&gt;)<br>                   obj.wait(timeout);<br>               ... <span class="hljs-comment">// Perform action appropriate to condition</span><br>           &#125;<br><br><span class="hljs-type">If</span> the current thread <span class="hljs-keyword">is</span> interrupted by any thread before <span class="hljs-keyword">or</span> <span class="hljs-keyword">while</span> it <span class="hljs-keyword">is</span> waiting, <span class="hljs-keyword">then</span> an <span class="hljs-type">InterruptedException</span> <span class="hljs-keyword">is</span> thrown. <span class="hljs-type">This</span> exception <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> thrown <span class="hljs-keyword">until</span> the lock status of <span class="hljs-literal">this</span> <span class="hljs-keyword">object</span> has been restored <span class="hljs-keyword">as</span> described above.<br>如果当前线程在等待之前或等待期间被任何线程interrupted，则抛出<span class="hljs-type">InterruptedException</span>。在还原此对象的锁定状态（如上所述）之前，不会引发此异常。<span class="hljs-type">MyTest2</span>.java<br><br><span class="hljs-type">Note</span> that the wait method, <span class="hljs-keyword">as</span> it places the current thread into the wait set <span class="hljs-keyword">for</span> <span class="hljs-literal">this</span> <span class="hljs-keyword">object</span>, unlocks only <span class="hljs-literal">this</span> <span class="hljs-keyword">object</span>; any other objects on which the current thread may <span class="hljs-keyword">be</span> synchronized remain locked <span class="hljs-keyword">while</span> the thread waits.<br>请注意，wait方法在将当前线程放入此对象的等待集中时，仅解锁此对象；在线程等待期间，可以同步当前线程的任何其他对象将保持锁定状态(可以在一个线程上对多个对象执行obj.wait())。<br></code></pre></td></tr></table></figure>
+
+<h3 id="notify方法"><a href="#notify方法" class="headerlink" title="notify方法"></a>notify方法</h3><figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs vbnet">Wakes up a <span class="hljs-type">single</span> thread that <span class="hljs-built_in">is</span> waiting <span class="hljs-keyword">on</span> this <span class="hljs-type">object</span><span class="hljs-comment">&#x27;s monitor. If any threads are waiting on this object, one of them is chosen to be awakened. The choice is arbitrary and occurs at the discretion of the implementation. A thread waits on an object&#x27;s monitor by calling one of the wait methods.</span><br>唤醒等待此对象监视器的单个线程。如果有任何线程正在等待这个对象，则选择其中一个线程被唤醒。选择是任意的，由实现者自行决定。线程通过调用其中一个wait方法来等待对象的监视器。<br><br>The awakened thread will <span class="hljs-built_in">not</span> be able <span class="hljs-keyword">to</span> proceed <span class="hljs-keyword">until</span> the current thread relinquishes the lock <span class="hljs-keyword">on</span> this <span class="hljs-type">object</span>. The awakened thread will compete <span class="hljs-keyword">in</span> the usual manner <span class="hljs-keyword">with</span> any other threads that might be actively competing <span class="hljs-keyword">to</span> synchronize <span class="hljs-keyword">on</span> this <span class="hljs-type">object</span>; <span class="hljs-keyword">for</span> example, the awakened thread enjoys no reliable privilege <span class="hljs-built_in">or</span> disadvantage <span class="hljs-keyword">in</span> being the <span class="hljs-keyword">next</span> thread <span class="hljs-keyword">to</span> lock this <span class="hljs-type">object</span>.<br>在当前线程放弃对该对象的锁定之前，唤醒的线程将无法继续。唤醒的线程将以通常的方式与任何其他线程竞争，这些线程可能正在积极竞争以在此对象上同步；例如，唤醒的线程在成为下一个锁定此对象的线程时没有可靠的特权或劣势。<br><br>This method should only be called <span class="hljs-keyword">by</span> a thread that <span class="hljs-built_in">is</span> the owner <span class="hljs-keyword">of</span> this <span class="hljs-type">object</span><span class="hljs-comment">&#x27;s monitor. A thread becomes the owner of the object&#x27;s monitor in one of three ways:</span><br>此方法只能由作为此对象监视器所有者的线程调用。线程通过以下三种方式之一成为对象监视器的所有者：<br><span class="hljs-number">1</span>.<span class="hljs-keyword">By</span> executing a synchronized instance method <span class="hljs-keyword">of</span> that <span class="hljs-type">object</span>.<br>通过执行该对象的synchronized实例方法。<br><span class="hljs-number">2</span>.<span class="hljs-keyword">By</span> executing the body <span class="hljs-keyword">of</span> a synchronized statement that synchronizes <span class="hljs-keyword">on</span> the <span class="hljs-type">object</span>.<br>通过执行同步对象的synchronized语句块。<br><span class="hljs-number">3</span>.<span class="hljs-keyword">For</span> objects <span class="hljs-keyword">of</span> type <span class="hljs-keyword">Class</span>, <span class="hljs-keyword">by</span> executing a synchronized <span class="hljs-keyword">static</span> method <span class="hljs-keyword">of</span> that <span class="hljs-keyword">class</span>.<br>对于<span class="hljs-keyword">Class</span>类型的对象，通过执行该类的synchronized静态方法。<br><br>Only one thread at a time can own an <span class="hljs-type">object</span><span class="hljs-comment">&#x27;s monitor.</span><br>一次只能有一个线程拥有对象的监视器。<br></code></pre></td></tr></table></figure>
+
+<h3 id="notifyAll方法"><a href="#notifyAll方法" class="headerlink" title="notifyAll方法"></a>notifyAll方法</h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">Wakes up <span class="hljs-keyword">all</span> threads that are waiting <span class="hljs-keyword">on</span> this <span class="hljs-keyword">object</span><span class="hljs-string">&#x27;s monitor. A thread waits on an object&#x27;</span>s monitor <span class="hljs-keyword">by</span> calling one <span class="hljs-keyword">of</span> the wait methods.<br>唤醒此对象监视器上等待的所有线程。线程通过调用其中一个wait方法来等待对象的监视器。<br><br>The awakened threads will <span class="hljs-keyword">not</span> be able <span class="hljs-keyword">to</span> proceed <span class="hljs-keyword">until</span> the <span class="hljs-keyword">current</span> thread relinquishes the <span class="hljs-keyword">lock</span> <span class="hljs-keyword">on</span> this <span class="hljs-keyword">object</span>. The awakened threads will compete <span class="hljs-keyword">in</span> the usual manner <span class="hljs-keyword">with</span> <span class="hljs-keyword">any</span> other threads that might be actively competing <span class="hljs-keyword">to</span> synchronize <span class="hljs-keyword">on</span> this <span class="hljs-keyword">object</span>; <span class="hljs-keyword">for</span> example, the awakened threads enjoy <span class="hljs-keyword">no</span> reliable privilege <span class="hljs-keyword">or</span> disadvantage <span class="hljs-keyword">in</span> being the next thread <span class="hljs-keyword">to</span> <span class="hljs-keyword">lock</span> this <span class="hljs-keyword">object</span>.<br>在当前线程放弃对该对象的锁定之前，唤醒的线程将无法继续。唤醒的线程将以通常的方式与任何其他线程竞争，这些线程可能正在积极地竞争此对象上的synchronize；例如，唤醒的线程在成为锁定此对象的下一个线程时没有可靠的特权或劣势。<br><br>This <span class="hljs-keyword">method</span> should <span class="hljs-keyword">only</span> be <span class="hljs-keyword">called</span> <span class="hljs-keyword">by</span> a thread that <span class="hljs-keyword">is</span> the <span class="hljs-keyword">owner</span> <span class="hljs-keyword">of</span> this <span class="hljs-keyword">object</span><span class="hljs-string">&#x27;s monitor. See the notify method for a description of the ways in which a thread can become the owner of a monitor.</span><br><span class="hljs-string">此方法只能由作为此对象监视器所有者的线程调用。有关线程成为监视器所有者的方式的描述，请参见notify方法。</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>当调用wait时，首先需要确保调用了wait方法的线程已经持有了对象的锁(调用wait方法的代码片段需要放在sychronized块或者时sychronized方法中，这样才可以确保线程在调用wait方法前已经获取到了对象的锁)</li>
+<li>当调用wait时，该线程就会释放掉这个对象的锁，然后进入等待状态(wait set)</li>
+<li>当线程调用了wait后进入到等待状态时，它就可以等待其他线程调用相同对象的notify或者notifyAll方法使得自己被唤醒</li>
+<li>一旦这个线程被其它线程唤醒之后，该线程就会与其它线程以同开始竞争这个对象的锁(公平竞争)；只有当该线程获取到对象的锁后，线程才会继续往下执行</li>
+<li>当调用对象的notify方法时，他会随机唤醒对象等待集合(wait set)中的任意一个线程，当某个线程被唤醒后，它就会与其它线程一同竞争对象的锁</li>
+<li>当调用对象的notifyAll方法时，它会唤醒该对象等待集合(wait set)中的所有线程，这些线程被唤醒后，又会开始竞争对象的锁</li>
+<li>在某一时刻，只有唯一的一个线程能拥有对象的锁</li>
+</ol>
+<h3 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h3><ol>
+<li>编写多线程程序，实现下列目标<ol>
+<li>存在一个对象，该对象有一个int类型的成员变量counter，该成员变量的初始值为0</li>
+<li>创建两个线程，其中一个线程对该对象的成员变量counter增1，另一个线程减1</li>
+<li>输出该对象成员变量counter每次变化之后的值</li>
+<li>最终输出结果应为0101010101……</li>
+<li>程序为MyObject.java IncreaseThread.java DecreaseThread.java  Client.java</li>
+</ol>
+</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2025/08/21/Java/面试/JUC/java并发编程/javadoc文档/wait()和notify()方法/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mean</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%9D%A2%E8%AF%95/JUC/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/javadoc%E6%96%87%E6%A1%A3/condition/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/21/Java/%E9%9D%A2%E8%AF%95/JUC/Prog/" title="">
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
